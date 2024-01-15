@@ -113,12 +113,12 @@ public class StateCostingReportPdf{
 					.showTextAligned("Generated on " + formattedDate, 640, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
 					.showTextAligned("https://prabandh.education.gov.in", 640, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 
-			/*if (i == 2 || i == 3) {
+			if (i == 2 || i == 3) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(255, 0, 0))
-				.showTextAligned("*All figures (In Lakhs)" , 455, 790, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
-			}*/
+				.showTextAligned("*All figures (In Lakhs)" , 700, 560, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+			}
 			
-			if (i > 1) {
+			if (i > 3) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(165, 42, 42))
 				.showTextAligned("Budget Demand  - " + regionName, 37, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
 				.showTextAligned("F. Y. - " + planYear, 725, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
@@ -207,7 +207,7 @@ public class StateCostingReportPdf{
 			
 			// 2nd page Tentative Proposed  table----Start-----------
 			if(stateTentive !=null && stateTentive.isPresent()) {
-				doc.add(CommonMethod.createHeadingParaGraph("Tentative Proposed Release F.Y. 2024-25", 60f, 0f, 15, new DeviceRgb(0, 0, 0)));
+				doc.add(CommonMethod.createHeadingParaGraph("Tentative Proposed Release F.Y. 2024-25", 20f, 0f, 15, new DeviceRgb(0, 0, 0)));
 				Table tentativeProposed = getTentativeProposed (doc, stateTentive,planYear);
 				doc.add(tentativeProposed);
 			}
@@ -263,7 +263,7 @@ public class StateCostingReportPdf{
 			e.printStackTrace();
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", "inline; filename=Costing Sheet for " + regionName + ".pdf");
+		headers.add("Content-Disposition", "inline; filename=Costing Sheet Recommended for " + regionName + ".pdf");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(bytes);
 	}
 
@@ -865,7 +865,7 @@ public class StateCostingReportPdf{
 									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getProposedPhysicalQuantity()+"", 1, 1,9);
 									CommonMethod.createDataCellTotalWithBorderRight(table, df.format(listObj.getProposedUnitCost()), 1, 1,9);
 									CommonMethod.createDataCellTotalWithBorderRight(table, df.format(listObj.getProposedFinancialAmount()), 1, 1,9);
-									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getCoordinatorRemarks(), 1, 1,9);
+									CommonMethod.createDataCellCategoryWithBorderRight(table, "", 1, 1,9);
 									isTotal = true;
 								} else if (listObj.getMajorComponentId() == 666666) {
 									CommonMethod.createDataCellBoldRight(table, "Total of " + listObj.getSchemeName(), 4, 1,9);

@@ -106,18 +106,18 @@ public class CostingReportPdf {
 			.showTextAligned("https://prabandh.education.gov.in", 403, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0).setFontColor(new DeviceRgb(165,42,42));*/
 
 			new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(font).setFontSize(9).setFontColor(new DeviceRgb(12, 49, 99))
-					.showTextAligned("Generated on " + formattedDate, 403, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
-					.showTextAligned("https://prabandh.education.gov.in", 403, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+					.showTextAligned("Generated on " + formattedDate, 653, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+					.showTextAligned("https://prabandh.education.gov.in", 650, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 
 			if (i == 2 || i == 3) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(255, 0, 0))
-				.showTextAligned("*All figures (In Lakhs)" , 455, 790, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+				.showTextAligned("*All figures (In Lakhs)" , 700, 560, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 			}
 			
 			if (i > 3) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(165, 42, 42))
-				.showTextAligned("Budget Demand  - " + regionName, 37, 820, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
-				.showTextAligned("F. Y. - " + planYear, 475, 820, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+				.showTextAligned("Budget Demand  - " + regionName, 37, 576, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+				.showTextAligned("F. Y. - " + planYear, 700, 576, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 			}
 
 			ImageData imageData;
@@ -159,18 +159,21 @@ public class CostingReportPdf {
 		write.setSmartMode(true);
 
 		PdfDocument pdfDoc = new PdfDocument(write);
-		pdfDoc.setDefaultPageSize(PageSize.A4);
+		pdfDoc.setDefaultPageSize(PageSize.A4.rotate());
 
 		Document doc = new Document(pdfDoc);
 
 		// first page paragraph----Start-----------
-		doc.add(CommonMethod.createHeadingParaGraph("Costing Sheet", 100f, 0f, 35, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph("(Samagra Shiksha)", 10f, 0f, 40, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph("of", 25f, 0f, 20, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph(regionName, 25f, 0f, 35, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph(planYear, 25f, 0f, 40, new DeviceRgb(165, 42, 42)));
-	//	doc.add(CommonMethod.createHeadingParaGraph("(Prepared by - " + regionName + ")", 50f, 0f, 15, new DeviceRgb(12, 49, 99)));
-		doc.add(CommonMethod.createHeadingParaGraph("(Recommended by Dept. Of School Education & Literacy Govt. Of India)", 50f, 0f, 15, new DeviceRgb(12, 49, 99)));
+		doc.add(CommonMethod.createHeadingParaGraph("Costing Sheet", 30f, 0f, 35, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("(Samagra Shiksha)", 0f, 0f, 40, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("of", 20f, 0f, 20, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph(regionName, 10f, 0f, 35, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph(planYear, 8f, 0f, 40, new DeviceRgb(165, 42, 42)));
+//		doc.add(CommonMethod.createHeadingParaGraph("by", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
+//		doc.add(CommonMethod.createHeadingParaGraph("Dept. Of School Education & Literacy", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
+//		doc.add(CommonMethod.createHeadingParaGraph("Govt. Of India", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
+		doc.add(CommonMethod.createHeadingParaGraph("(Prepared by - " + regionName + ")", 10f, 0f, 15, new DeviceRgb(12, 49, 99)));
+	//	doc.add(CommonMethod.createHeadingParaGraph("(Recommended by Dept. Of School Education & Literacy Govt. Of India)", 10f, 0f, 15, new DeviceRgb(12, 49, 99)));
 		// first page paragraph---End------------
 
 		
@@ -191,7 +194,7 @@ public class CostingReportPdf {
 
 			// 2nd page Expenditure Details table----Start-----------
 			if(expenditureRecurNonRecur2324 !=null && expenditureRecurNonRecur2324.size()>0 ) {
-				doc.add(CommonMethod.createHeadingParaGraph("Anticipated Expenditure Details till 31st March 2024", 60f, 0f, 15, new DeviceRgb(0, 0, 0)));
+				doc.add(CommonMethod.createHeadingParaGraph("Anticipated Expenditure Details till 31st March 2024", 20f, 0f, 15, new DeviceRgb(0, 0, 0)));
 				Table expenditureDetails = getExpenditureDetails(doc,planYear, expenditureRecurNonRecur2324);
 				doc.add(expenditureDetails);
 			}
@@ -199,7 +202,7 @@ public class CostingReportPdf {
 			
 			// 2nd page Tentative Proposed  table----Start-----------
 			if(stateTentive !=null && stateTentive.isPresent()) {
-				doc.add(CommonMethod.createHeadingParaGraph("Tentative Proposed Release F.Y. 2024-25", 60f, 0f, 15, new DeviceRgb(0, 0, 0)));
+				doc.add(CommonMethod.createHeadingParaGraph("Tentative Proposed Release F.Y. 2024-25", 20f, 0f, 15, new DeviceRgb(0, 0, 0)));
 				Table tentativeProposed = getTentativeProposed (doc, stateTentive,planYear);
 				doc.add(tentativeProposed);
 			}
@@ -211,6 +214,7 @@ public class CostingReportPdf {
 				doc.add(tentativeProposed);
 			}
 			if(budgetRecurNonRecur2324 !=null && expenditureRecurNonRecur2324 !=null ) {
+				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 				doc.add(CommonMethod.createHeadingParaGraph("Budget Approved for F.Y. 2023-24 VS Anticipated Expenditure Details till 31st March 2024", 20f, 0f, 10, new DeviceRgb(0, 0, 0)));
 				Table tentativeProposed = getBudgetExpenditureBarChart(doc,planYear, budgetRecurNonRecur2324,expenditureRecurNonRecur2324);
 				doc.add(tentativeProposed);
@@ -384,6 +388,7 @@ public class CostingReportPdf {
 		
 		Table mainTable1 = new Table(UnitValue.createPercentArray(new float[] { 1f,1f }));
 		Table table = new Table(UnitValue.createPercentArray(new float[] {.5f, 1.5f, 1.5f}));
+		table.setWidth(UnitValue.createPercentValue(100));
 
 		CommonMethod.createDataCellBoldWithBackGroundColor(table, "SNo", 1, 1, 10f, TextAlignment.CENTER);
 		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Major Component", 1, 1, 10f, TextAlignment.CENTER);
@@ -687,7 +692,7 @@ public class CostingReportPdf {
 			Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue555555)
 			throws IOException {
 
-		Table table = new Table(UnitValue.createPercentArray(new float[] { 1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f }));
+		Table table = new Table(UnitValue.createPercentArray(new float[] { 1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
 		table.setWidth(UnitValue.createPercentValue(100));
 
 		if (schemeKey != 555555) {
@@ -695,6 +700,8 @@ public class CostingReportPdf {
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Component", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Activity", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Activity", 1, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Total Approve Budget", 1, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Total Expenditure", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Physical Quantity", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Unit Cost", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Financial Amount (In Lakhs)", 1, 1, 10f, TextAlignment.CENTER);
@@ -772,7 +779,7 @@ public class CostingReportPdf {
 								if (listObj.getSchemeId() != 555555) {
 									if (schemeFlag) {
 										String schemeName = "Schem Name : " + listObj.getSchemeId().toString() + " - " + (listObj.getSchemeName() == null ? "" : listObj.getSchemeName());
-										CommonMethod.createDataCellBoldLeft(table, schemeName, 7, 1, 10);
+										CommonMethod.createDataCellBoldLeft(table, schemeName, 9, 1, 10);
 										schemeFlag = false;
 									}
 									if (majorCompSize != 0 && listObj.getMajorComponentId() != 666666) {
@@ -799,6 +806,8 @@ public class CostingReportPdf {
 								Boolean isTotal = false;
 								if (listObj.getSchemeId() == 555555) {
 									CommonMethod.createDataCellTotalWithBorderRight(table, "Grand Total of All Scheme : ", 4, 1, 11);
+									CommonMethod.createDataCellTotalWithBorderRight(table,  listObj.getTotApprovedBudget() == null ? "" : df.format(listObj.getTotApprovedBudget()) + "", 1, 1, 11);
+									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getTotExpenditure() == null ? "" : df.format(listObj.getTotExpenditure())+"", 1, 1, 11);
 									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1, 11);
 									CommonMethod.createDataCellTotalWithBorderRight(table, "", 1, 1, 11);
 									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1, 11);
@@ -823,11 +832,15 @@ public class CostingReportPdf {
 
 								if (isTotal) {
 									if (listObj.getSchemeId() != 555555) {
+										CommonMethod.createDataCellBoldRight(table, listObj.getTotApprovedBudget() == null ? "" :listObj.getTotApprovedBudget()==0.00000?"": df.format(listObj.getTotApprovedBudget()) + "", 1, 1, 9);
+										CommonMethod.createDataCellBoldRight(table, listObj.getTotExpenditure() == null ? "" : listObj.getTotExpenditure()==0.00000?"": df.format(listObj.getTotExpenditure())+"", 1, 1, 9);
 										CommonMethod.createDataCellBoldRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1,9);
 										CommonMethod.createDataCellBoldRight(table, "", 1, 1,9);
 										CommonMethod.createDataCellBoldRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1,9);
 									}
 								} else {
+									CommonMethod.createDataCellCategoryWithBorderRight(table,  listObj.getTotApprovedBudget() == null ?  "" :listObj.getTotApprovedBudget()==0.00000 ? "": df.format(listObj.getTotApprovedBudget()) + "", 1, 1, 9);
+									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getTotExpenditure() == null ? "" : listObj.getTotExpenditure()==0.00000?"": df.format(listObj.getTotExpenditure())+"", 1, 1, 9);
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1, 9);
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getUnitCost() == null ? "" : df.format(listObj.getUnitCost()) + "", 1, 1, 9);
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1, 9);
