@@ -9,31 +9,34 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.org.nic.prabandh.service.StateRptService;
+import com.org.nic.prabandh.service.CostingRptService;
 
 import lombok.extern.slf4j.Slf4j;
-
 
 @RestController
 @RequestMapping("/api")
 @Slf4j
 public class ReportController {
-	
 
 	@Autowired
-	StateRptService stateRptService;
-		
-	
-	@GetMapping(value = "costing-report/{stateId}/{planYear}")
-	public ResponseEntity<?> fetchDelhiCostingReport(
-			@PathVariable(name = "stateId") Integer stateId,
-			@PathVariable(name = "planYear") String planYear
-			) throws IOException{ 
-		
+	CostingRptService costingRptService;
 
-		//return costingReportUtill.downloadCostingReport();
-		return stateRptService.downloadCostingReport(stateId,planYear);
+	@GetMapping(value = "costing-report/{regionId}/{regionType}/{planYear}")
+	public ResponseEntity<?> fetchCostingReport(
+			@PathVariable(name = "regionId") Integer regionId,
+			@PathVariable(name = "regionType") Integer regionType,
+			@PathVariable(name = "planYear") String planYear) throws IOException {
+		return costingRptService.downloadCostingReport(regionId,regionType, planYear);
 	}
 
+	
+	
+	@GetMapping(value = "state-costing/{regionId}/{planYear}")
+	public ResponseEntity<?> fetchStateCostingReport(
+			@PathVariable(name = "regionId") Integer regionId,
+			@PathVariable(name = "planYear") String planYear) throws IOException {
+		
+		return costingRptService.downloadStateCostingReport(regionId,planYear);
+	}
 
 }
