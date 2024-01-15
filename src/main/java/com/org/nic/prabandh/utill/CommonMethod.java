@@ -119,12 +119,23 @@ public class CommonMethod {
 		cell.setBorder(borderColor);
 		table.addCell(cell);
 	}
-
-	public static void createDataCellBoldRight(Table table, String content, int colspan, int rowspan) throws IOException {
+	public static void createDataCellBoldCenter(Table table, String content, int colspan, int rowspan,float fontSize) throws IOException {
 		PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-		Cell cell = new Cell(rowspan, colspan).add(new Paragraph(content).setFont(font).setFontSize(9));
+		Cell cell = new Cell(rowspan, colspan).add(new Paragraph(content).setFont(font).setFontSize(fontSize));
+		cell.setMinHeight(14);
+		cell.setTextAlignment(TextAlignment.CENTER);
+		cell.setVerticalAlignment(VerticalAlignment.MIDDLE);
+		Border borderColor = new SolidBorder(new DeviceRgb(111,107,107), 0.5f);
+		cell.setBorder(borderColor);
+		table.addCell(cell);
+	}
+
+	public static void createDataCellBoldRight(Table table, String content, int colspan, int rowspan, float fontSize) throws IOException {
+		PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+		Cell cell = new Cell(rowspan, colspan).add(new Paragraph(content).setFont(font).setFontSize(fontSize));
 		cell.setMinHeight(14);
 		cell.setTextAlignment(TextAlignment.RIGHT);
+		cell.setVerticalAlignment(VerticalAlignment.MIDDLE);
 		Border borderColor = new SolidBorder(new DeviceRgb(111,107,107), 0.5f);
 		cell.setBorder(borderColor);
 		table.addCell(cell);

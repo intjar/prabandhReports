@@ -13,10 +13,11 @@ import com.org.nic.prabandh.bean.RecurringNonRecurring;
 import com.org.nic.prabandh.model.MstStateModel;
 
 @Repository
-public interface CostingRptRepository extends CrudRepository<MstStateModel, Integer>{
+public interface StateCostingRptRepository extends CrudRepository<MstStateModel, Integer>{
 
 	
-	@Query(nativeQuery=true, value ="select \r\n"
+	@Query(nativeQuery=true, value =" select \r\n"
+			+ "       coalesce(proposed_physical_quantity,0) as proposedPhysicalQuantity ,coalesce(proposed_unit_cost,0) as proposedUnitCost,coalesce(proposed_financial_amount,0) as proposedFinancialAmount ,coalesce(coordinator_remarks,'') as coordinatorRemarks,\r\n"
 			+ "      financial_amount as financialAmount,unit_cost as unitCost,physical_quantity as physicalQuantity,\r\n"
 			+ "      case when (aa.activity_master_id is null ) then 888888 else aa.activity_master_id end  as activityMasterId,\r\n"
 			+ "      case when (aa.sub_component_id is null ) then 777777 else aa.sub_component_id end as subComponentId,\r\n"
@@ -29,10 +30,14 @@ public interface CostingRptRepository extends CrudRepository<MstStateModel, Inte
 			+ "      SELECT sum(pawpbd.financial_amount) AS financial_amount,\r\n"
 			+ "          sum(pawpbd.physical_quantity) AS physical_quantity,\r\n"
 			+ "          sum(pawpbd.financial_amount)/ nullif(sum(pawpbd.physical_quantity),0) as unit_cost ,\r\n"
+			+ "           CAST(SUM(pawpbd.proposed_financial_amount) AS numeric(16, 5)) AS proposed_financial_amount,\r\n"
+			+ "          sum(pawpbd.proposed_physical_quantity) AS proposed_physical_quantity,\r\n"
+			+ "          (sum(pawpbd.proposed_financial_amount)/ nullif(sum(pawpbd.proposed_physical_quantity),0))\\:\\:numeric(16,5) as proposed_unit_cost ,\r\n"
+			+ "          max(coordinator_remarks)as coordinator_remarks,\r\n"
 			+ "          pawpbd.scheme_id,pawpbd.major_component_id,pawpbd.sub_component_id,\r\n"
 			+ "          pawpbd.activity_master_id,pawpbd.activity_master_details_id\r\n"
-			+ "        FROM prb_ann_wrk_pln_bdgt_data pawpbd\r\n"
-			+ "        WHERE pawpbd.state = :stateId  and pawpbd.plan_year=:planYear "
+			+ "        FROM prb_state_ann_wrk_pln_bdgt_data pawpbd\r\n"
+			+ "        WHERE pawpbd.state =:stateId  and pawpbd.plan_year=:planYear \r\n"
 			+ "        GROUP BY GROUPING SETS ((pawpbd.scheme_id, pawpbd.major_component_id, pawpbd.sub_component_id, pawpbd.activity_master_id, pawpbd.activity_master_details_id), (pawpbd.scheme_id, pawpbd.major_component_id, pawpbd.sub_component_id, pawpbd.activity_master_id), (pawpbd.scheme_id, pawpbd.major_component_id, pawpbd.sub_component_id), (pawpbd.scheme_id, pawpbd.major_component_id), (pawpbd.scheme_id), ())\r\n"
 			+ "      ) \r\n"
 			+ "      aa \r\n"
@@ -83,20 +88,8 @@ public interface CostingRptRepository extends CrudRepository<MstStateModel, Inte
 			+ "and state  =:stateId and plan_year =:planYear "
 			+ "group by  pmcws.major_component_id_without_scheme , pmcws.major_component_name_without_scheme order by pmcws.major_component_name_without_scheme")
 	public List<MajorComponentProposal> findMajorComponentProposal(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
-	
-//===========================	State Costing Sheet Recommendation=================================
-	@Query(nativeQuery=true, value ="SELECT pmc.title as  majorComponentName,\r\n" + 
-			"	  round(sum(pawpbd.financial_amount),5) AS financialAmount,\r\n" + 
-			"	  coalesce(round(sum(pawpbd.proposed_financial_amount),5),0) AS majorComponentIdWithoutScheme\r\n" + 
-			"            \r\n" + 
-			"         FROM prb_state_ann_wrk_pln_bdgt_data pawpbd\r\n" + 
-			"		 left join prb_major_component pmc   on (pmc.prb_major_component_id = pawpbd.major_component_id)\r\n" + 
-			"        WHERE pawpbd.state =:stateId and plan_year =:planYear \r\n" + 
-			"		group by grouping sets ((pmc.title),())\r\n" + 
-			"		 order by majorComponentName")
-	public List<MajorComponentProposal> findMajorComponentProposalForStateRecommendation(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
 
-//========================End===========================
+
 
 	@Query(nativeQuery=true, value ="select\r\n"
 			+ "sum(financial_amount) filter (where pd.recuring_nonrecuring= 1) as recuring,\r\n"

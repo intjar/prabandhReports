@@ -15,5 +15,12 @@ public interface ProposedCosting {
 	public String getActivityMasterName();
 	public String getActivityMasterDetailName();
 	public Integer getRecuringNonrecuring();
+	
+	
+	public Integer getProposedPhysicalQuantity();
+	public Double getProposedUnitCost();
+	public Double getProposedFinancialAmount();
+	public String getCoordinatorRemarks();
+	
 
 }

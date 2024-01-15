@@ -8,12 +8,14 @@ import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,7 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
@@ -52,7 +55,8 @@ import com.org.nic.prabandh.constant.Constants;
 import com.org.nic.prabandh.model.MastStatesTentative;
 
 @Component
-public class CostingReportPdf {
+public class StateCostingReportPdf{
+
 	DecimalFormat df = new DecimalFormat("0.00000");
 	SimpleDateFormat sdf = new SimpleDateFormat(Constants.META_DATA_DATE_FORMAT);
 	String formattedDate = sdf.format(new Date());
@@ -106,18 +110,18 @@ public class CostingReportPdf {
 			.showTextAligned("https://prabandh.education.gov.in", 403, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0).setFontColor(new DeviceRgb(165,42,42));*/
 
 			new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(font).setFontSize(9).setFontColor(new DeviceRgb(12, 49, 99))
-					.showTextAligned("Generated on " + formattedDate, 403, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
-					.showTextAligned("https://prabandh.education.gov.in", 403, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+					.showTextAligned("Generated on " + formattedDate, 640, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+					.showTextAligned("https://prabandh.education.gov.in", 640, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 
-			if (i == 2 || i == 3) {
+			/*if (i == 2 || i == 3) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(255, 0, 0))
 				.showTextAligned("*All figures (In Lakhs)" , 455, 790, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
-			}
+			}*/
 			
-			if (i > 3) {
+			if (i > 1) {
 				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(165, 42, 42))
-				.showTextAligned("Budget Demand  - " + regionName, 37, 820, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
-				.showTextAligned("F. Y. - " + planYear, 475, 820, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+				.showTextAligned("Budget Demand  - " + regionName, 37, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+				.showTextAligned("F. Y. - " + planYear, 725, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 			}
 
 			ImageData imageData;
@@ -148,29 +152,33 @@ public class CostingReportPdf {
 		return baos.toByteArray();
 	}
 
-	public ResponseEntity<?> downloadCostingReportPdf(String planYear, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>>> costingReportMap, String regionName,
-			Optional<MastStatesTentative> stateTentive,
-			List<MajorComponentProposal> majorComponentProposal,
-			List<RecurringNonRecurring> recurringNonRecurring,List<RecurringNonRecurring> budgetRecurNonRecur2324,
-			List<RecurringNonRecurring> expenditureRecurNonRecur2324) throws IOException {
+	public ResponseEntity<?> downloadCostingReportPdf(String planYear,
+			Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>>> costingReportMap,
+			String regionName, Optional<MastStatesTentative> stateTentive,
+			List<RecurringNonRecurring> recurringNonRecurring, List<RecurringNonRecurring> budgetRecurNonRecur2324,
+			List<RecurringNonRecurring> expenditureRecurNonRecur2324,
+			List<MajorComponentProposal> majorComponentProposal) throws IOException {
 		
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PdfWriter write = new PdfWriter(byteArrayOutputStream);
 		write.setSmartMode(true);
 
 		PdfDocument pdfDoc = new PdfDocument(write);
-		pdfDoc.setDefaultPageSize(PageSize.A4);
+		pdfDoc.setDefaultPageSize(PageSize.A4.rotate());
 
 		Document doc = new Document(pdfDoc);
 
 		// first page paragraph----Start-----------
-		doc.add(CommonMethod.createHeadingParaGraph("Costing Sheet", 100f, 0f, 35, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph("(Samagra Shiksha)", 10f, 0f, 40, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph("of", 25f, 0f, 20, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph(regionName, 25f, 0f, 35, new DeviceRgb(165, 42, 42)));
-		doc.add(CommonMethod.createHeadingParaGraph(planYear, 25f, 0f, 40, new DeviceRgb(165, 42, 42)));
-	//	doc.add(CommonMethod.createHeadingParaGraph("(Prepared by - " + regionName + ")", 50f, 0f, 15, new DeviceRgb(12, 49, 99)));
-		doc.add(CommonMethod.createHeadingParaGraph("(Recommended by Dept. Of School Education & Literacy Govt. Of India)", 50f, 0f, 15, new DeviceRgb(12, 49, 99)));
+	//	doc.add(CommonMethod.createHeadingParaGraph("State Costing Sheet Recommendation", 50f, 0f, 35, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("Costing Sheet", 30f, 0f, 35, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("(Samagra Shiksha)", 0f, 0f, 40, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("of", 20f, 0f, 20, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph(regionName, 10f, 0f, 35, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph(planYear, 8f, 0f, 40, new DeviceRgb(165, 42, 42)));
+		doc.add(CommonMethod.createHeadingParaGraph("Recommended", 8f, 0f, 15, new DeviceRgb(12, 49, 99)));
+		doc.add(CommonMethod.createHeadingParaGraph("by", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
+		doc.add(CommonMethod.createHeadingParaGraph("Dept. Of School Education & Literacy", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
+		doc.add(CommonMethod.createHeadingParaGraph("Govt. Of India", 1f, 0f, 15, new DeviceRgb(12, 49, 99)));
 		// first page paragraph---End------------
 
 		
@@ -191,7 +199,7 @@ public class CostingReportPdf {
 
 			// 2nd page Expenditure Details table----Start-----------
 			if(expenditureRecurNonRecur2324 !=null && expenditureRecurNonRecur2324.size()>0 ) {
-				doc.add(CommonMethod.createHeadingParaGraph("Anticipated Expenditure Details till 31st March 2024", 60f, 0f, 15, new DeviceRgb(0, 0, 0)));
+				doc.add(CommonMethod.createHeadingParaGraph("Anticipated Expenditure Details till 31st March 2024", 20f, 0f, 15, new DeviceRgb(0, 0, 0)));
 				Table expenditureDetails = getExpenditureDetails(doc,planYear, expenditureRecurNonRecur2324);
 				doc.add(expenditureDetails);
 			}
@@ -210,7 +218,9 @@ public class CostingReportPdf {
 				Table tentativeProposed = getMajorProposed(doc, majorComponentProposal,planYear);
 				doc.add(tentativeProposed);
 			}
+			
 			if(budgetRecurNonRecur2324 !=null && expenditureRecurNonRecur2324 !=null ) {
+				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 				doc.add(CommonMethod.createHeadingParaGraph("Budget Approved for F.Y. 2023-24 VS Anticipated Expenditure Details till 31st March 2024", 20f, 0f, 10, new DeviceRgb(0, 0, 0)));
 				Table tentativeProposed = getBudgetExpenditureBarChart(doc,planYear, budgetRecurNonRecur2324,expenditureRecurNonRecur2324);
 				doc.add(tentativeProposed);
@@ -221,8 +231,8 @@ public class CostingReportPdf {
 			
 			
 			// report data-----Start------------
-			Table table = new Table(UnitValue.createPercentArray(new float[] { 1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f }));
-			table.setWidth(UnitValue.createPercentValue(100));
+			//Table table = new Table(UnitValue.createPercentArray(new float[] { 1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f }));
+			//table.setWidth(UnitValue.createPercentValue(100));
 			for (Map.Entry<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>>> schemeEntry : costingReportMap.entrySet()) {
 				Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue = schemeEntry.getValue();
 
@@ -382,48 +392,86 @@ public class CostingReportPdf {
 
 	private Table getMajorProposed(Document doc, List<MajorComponentProposal> majorComponentProposal, String planYear) throws IOException {
 		
-		Table mainTable1 = new Table(UnitValue.createPercentArray(new float[] { 1f,1f }));
-		Table table = new Table(UnitValue.createPercentArray(new float[] {.5f, 1.5f, 1.5f}));
+		Table mainTable1 = new Table(UnitValue.createPercentArray(new float[] {2, 1.5f ,1.5f}));
+		Table table1 = new Table(UnitValue.createPercentArray(new float[] {1}));
+		Table table2 = new Table(UnitValue.createPercentArray(new float[] {1}));
+		mainTable1.setWidth(UnitValue.createPercentValue(100));
+		mainTable1.setFixedLayout();
+		Table table = new Table(UnitValue.createPercentArray(new float[] {.5f, 2, 1 ,1}));
 
-		CommonMethod.createDataCellBoldWithBackGroundColor(table, "SNo", 1, 1, 10f, TextAlignment.CENTER);
-		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Major Component", 1, 1, 10f, TextAlignment.CENTER);
-		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Proposal F.Y."+planYear, 1, 1, 10f, TextAlignment.CENTER);
+		CommonMethod.createDataCellBoldWithBackGroundColor(table, "SNo", 1, 2, 10f, TextAlignment.CENTER);
+		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Major Component", 1, 2, 10f, TextAlignment.CENTER);
+		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Figures for F.Y."+planYear, 2, 1, 10f, TextAlignment.CENTER);
+		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Proposed by State" , 1, 1, 10f, TextAlignment.CENTER);
+		CommonMethod.createDataCellBoldWithBackGroundColor(table, "Recommended by DoSEL", 1, 1, 10f, TextAlignment.CENTER);
 		
 		Map<String, Double> dataSet = new TreeMap<>();
-		int sno=1;Double financialAmountTot=0d;
+		Map<String, Double> recommendationFincdataSet = new TreeMap<>();
+		int sno=1;Double financialAmountTot= 0d,recommendationFinancialAmountTot = 0d;
 		for (MajorComponentProposal listObj : majorComponentProposal) {
 			
 			double financialAmount=0d;
+			double recommendationFinancialAmount=0d;
 			if(listObj.getFinancialAmount() !=null)
 				financialAmount=listObj.getFinancialAmount();
-			financialAmountTot=financialAmountTot+financialAmount;
+			    financialAmountTot=financialAmountTot+financialAmount;
+			    recommendationFinancialAmount = listObj.getMajorComponentIdWithoutScheme();
+			    recommendationFinancialAmountTot = recommendationFinancialAmountTot+recommendationFinancialAmount;
+			    
 			
-			CommonMethod.createDataCellBoldCenter(table, sno+"", 1, 1, 9);
-			CommonMethod.createDataCellBoldLeft(table, listObj.getMajorComponentName(), 1, 1, 9);
-			CommonMethod.createDataCellCategoryWithBorderRight(table, df.format(financialAmount), 1, 1, 9);
-			
-			dataSet.put(listObj.getMajorComponentName(), Double.parseDouble(df.format(financialAmount)));
+			if(listObj.getMajorComponentName()!=null) {
+				CommonMethod.createDataCellBoldCenter(table, sno+"", 1, 1, 9);
+				CommonMethod.createDataCellBoldLeft(table, listObj.getMajorComponentName(), 1, 1, 9);
+				CommonMethod.createDataCellCategoryWithBorderRight(table, df.format(financialAmount), 1, 1, 9);
+				CommonMethod.createDataCellCategoryWithBorderRight(table,df.format(recommendationFinancialAmount), 1, 1, 9);
+				dataSet.put(listObj.getMajorComponentName(), Double.parseDouble(df.format(financialAmount)));
+				recommendationFincdataSet.put(listObj.getMajorComponentName(), Double.parseDouble(df.format(recommendationFinancialAmount)));
+			}
+		
 			
 			sno++;
 		}
 		CommonMethod.createDataCellBoldCenter(table, sno+"", 1, 1, 9);
 		CommonMethod.createDataCellBoldLeft(table, "Total", 1, 1, 9);
 		CommonMethod.createDataCellBoldRight(table, df.format(financialAmountTot), 1, 1, 9);
+		CommonMethod.createDataCellBoldRight(table, df.format(recommendationFinancialAmountTot), 1, 1, 9);
 		mainTable1.addCell(table);
 
 
-		ImageData pieImageData = DrawChartImage.generatePieChart(dataSet, "Component wise Proposal (figures (In Lakhs))", 18, 14, 18,30);
+		ImageData pieImageData = DrawChartImage.generatePieChart(dataSet, "State Proposal (Figures In Lakhs)", 18, 14, 18,30);
 		Image pieChartimage = new Image(pieImageData);
-		//pieChartimage.scaleAbsolute(250, 250);
-		pieChartimage.setAutoScale(true);
-		//pieChartimage.scaleToFit(100, 100);
+	//	pieChartimage.scaleAbsolute(100, 100);
+		//pieChartimage.setAutoScale(true);
+	  //  pieChartimage.scaleToFit(100, 100);
 
 		  
-		//pieChartimage.setFixedPosition(35, 550);
+		pieChartimage.setFixedPosition(348, 240);
+		pieChartimage.setWidth(230);
 		
-		Cell cellPie = new Cell(1,1);
+		Cell cellPie = new Cell(1, 1);
 		cellPie.add(pieChartimage);
+	//	table1.addCell(cellPie);
+	
 		mainTable1.addCell(cellPie);
+		
+		ImageData pieImageData1 = DrawChartImage.generatePieChart(recommendationFincdataSet, "DoSEL Recommendations (Figures In Lakhs)", 18, 14, 18,30);
+		Image pieChartimage1 = new Image(pieImageData1);
+		//pieChartimage.scaleAbsolute(100, 100);
+	//	pieChartimage.setAutoScale(true);
+	//	pieChartimage.scaleToFit(100, 100);
+
+		  
+		pieChartimage1.setFixedPosition(582, 240);
+		pieChartimage1.setWidth(230);
+		
+		Cell cellPie1 = new Cell(1, 1);
+		cellPie1.add(pieChartimage1);
+		mainTable1.addCell(cellPie1);
+		//table2.addCell(cellPie1);
+	//	table2.setBorder(Border.NO_BORDER);
+	//	mainTable1.addCell(table1);
+	//	mainTable1.addCell(table2);
+	//	mainTable1.addCell(Table2);
 		
 		return mainTable1;
 	}
@@ -687,17 +735,28 @@ public class CostingReportPdf {
 			Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue555555)
 			throws IOException {
 
-		Table table = new Table(UnitValue.createPercentArray(new float[] { 1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f }));
+		Table table = new Table(UnitValue.createPercentArray(new float[] {1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,1.0f }));
+		//Table table = new Table(UnitValue.createPercentArray(new float[] {1.5f, 1.5f, 1.5f, 3.2f, 1.0f, 1.0f, 1.0f, 1.0f }));
 		table.setWidth(UnitValue.createPercentValue(100));
 
 		if (schemeKey != 555555) {
-			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Major Component", 1, 1, 10f, TextAlignment.CENTER);
-			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Component", 1, 1, 10f, TextAlignment.CENTER);
-			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Activity", 1, 1, 10f, TextAlignment.CENTER);
-			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Activity", 1, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Major Component", 1, 2, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Component", 1, 2, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Activity", 1, 2, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Sub Activity", 1, 2, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Proposed by State", 3, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Recommended by DoSEL", 3, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Coordinator Remarks", 1, 2, 10f, TextAlignment.CENTER);
+			
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Physical Quantity", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Unit Cost", 1, 1, 10f, TextAlignment.CENTER);
 			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Financial Amount (In Lakhs)", 1, 1, 10f, TextAlignment.CENTER);
+			
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Physical Quantity", 1, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Unit Cost", 1, 1, 10f, TextAlignment.CENTER);
+			CommonMethod.createDataCelltableHeaderWithBgBlue(table, "Financial Amount (In Lakhs)", 1, 1, 10f, TextAlignment.CENTER);
+			
+	
 		}
 
 		int loopTimes = 1;
@@ -772,7 +831,7 @@ public class CostingReportPdf {
 								if (listObj.getSchemeId() != 555555) {
 									if (schemeFlag) {
 										String schemeName = "Schem Name : " + listObj.getSchemeId().toString() + " - " + (listObj.getSchemeName() == null ? "" : listObj.getSchemeName());
-										CommonMethod.createDataCellBoldLeft(table, schemeName, 7, 1, 10);
+										CommonMethod.createDataCellBoldLeft(table, schemeName, 11, 1, 10);
 										schemeFlag = false;
 									}
 									if (majorCompSize != 0 && listObj.getMajorComponentId() != 666666) {
@@ -802,6 +861,11 @@ public class CostingReportPdf {
 									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1, 11);
 									CommonMethod.createDataCellTotalWithBorderRight(table, "", 1, 1, 11);
 									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1, 11);
+									
+									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getProposedPhysicalQuantity()+"", 1, 1,9);
+									CommonMethod.createDataCellTotalWithBorderRight(table, df.format(listObj.getProposedUnitCost()), 1, 1,9);
+									CommonMethod.createDataCellTotalWithBorderRight(table, df.format(listObj.getProposedFinancialAmount()), 1, 1,9);
+									CommonMethod.createDataCellTotalWithBorderRight(table, listObj.getCoordinatorRemarks(), 1, 1,9);
 									isTotal = true;
 								} else if (listObj.getMajorComponentId() == 666666) {
 									CommonMethod.createDataCellBoldRight(table, "Total of " + listObj.getSchemeName(), 4, 1,9);
@@ -817,8 +881,7 @@ public class CostingReportPdf {
 									isTotal = true;
 								} else {
 									subActivitySrNo++;
-									CommonMethod.createDataCellCategoryWithBorderLeft(table,
-											(subActivitySrNo) + "-" + (listObj.getActivityMasterDetailName() == null ? "" : listObj.getActivityMasterDetailName()), 1, 1);
+									CommonMethod.createDataCellCategoryWithBorderLeft(table,(subActivitySrNo) + "-" + (listObj.getActivityMasterDetailName() == null ? "" : listObj.getActivityMasterDetailName()), 1, 1);
 								}
 
 								if (isTotal) {
@@ -826,11 +889,23 @@ public class CostingReportPdf {
 										CommonMethod.createDataCellBoldRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1,9);
 										CommonMethod.createDataCellBoldRight(table, "", 1, 1,9);
 										CommonMethod.createDataCellBoldRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1,9);
+										
+										CommonMethod.createDataCellBoldRight(table, df.format(listObj.getProposedPhysicalQuantity()), 1, 1,9);
+									//	CommonMethod.createDataCellBoldRight(table, df.format(listObj.getProposedUnitCost()), 1, 1,9);
+										CommonMethod.createDataCellBoldRight(table, "", 1, 1,9);
+										CommonMethod.createDataCellBoldRight(table, df.format(listObj.getProposedFinancialAmount()), 1, 1,9);
+										//CommonMethod.createDataCellBoldRight(table, listObj.getCoordinatorRemarks(), 1, 1,9);
+										CommonMethod.createDataCellBoldRight(table, "", 1, 1,9);
 									}
 								} else {
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() + "", 1, 1, 9);
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getUnitCost() == null ? "" : df.format(listObj.getUnitCost()) + "", 1, 1, 9);
 									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getFinancialAmount() == null ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1, 9);
+									
+									CommonMethod.createDataCellCategoryWithBorderRight(table, df.format(listObj.getProposedPhysicalQuantity()), 1, 1,9);
+									CommonMethod.createDataCellCategoryWithBorderRight(table, df.format(listObj.getProposedUnitCost()), 1, 1,9);
+									CommonMethod.createDataCellCategoryWithBorderRight(table, df.format(listObj.getProposedFinancialAmount()), 1, 1,9);
+									CommonMethod.createDataCellCategoryWithBorderRight(table, listObj.getCoordinatorRemarks(), 1, 1,9);
 								}
 
 							}
@@ -846,4 +921,6 @@ public class CostingReportPdf {
 	
 	
 
+
 }
+
