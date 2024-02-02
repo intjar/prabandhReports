@@ -14,21 +14,13 @@ public interface ProposedCosting {
 	public String getSubComponentName();
 	public String getActivityMasterName();
 	public String getActivityMasterDetailName();
-	public String getRecuringNonrecuring();
-	public Double getTotApprovedBudget();
-	public Double getTotExpenditure();
-	public Integer getProposedPhysicalQuantity();
+	public Integer getRecuringNonrecuring();
+	
+	
+	public Double getProposedPhysicalQuantity();
 	public Double getProposedUnitCost();
 	public Double getProposedFinancialAmount();
 	public String getCoordinatorRemarks();
 	
-	
-	public Double getApprovedbudgetrecurring();
-	public Double getExpenditurerecurring_31();
-	public Double getApprovedbudgetnonrecurring();
-	public Double getExpenditurenonrecurring_31();
-	public Integer getSerial_order();
-	public Double getSpillOverApprovalBudget23();
-	public Double getAnticipatedExpenditureSpillOver();
 
 }

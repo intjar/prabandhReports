@@ -10,6 +10,4 @@ public interface RecurringNonRecurring {
 	public Integer getStateId();
 
 	public Integer getSchemeId();
-	
-	public String getSchemeName();
 }

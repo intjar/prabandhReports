@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 
 public interface CostingRptService {
 
-	ResponseEntity<?> downloadCostingReport(Integer stateId, Integer regionType, String planYear) throws IOException;
+	ResponseEntity<?> downloadStateDistCostingReport(Integer stateId, Integer regionType, String planYear) throws IOException;
 
 
-	ResponseEntity<?> downloadStateCostingReport(Integer regionId, String planYear)throws IOException;
+	ResponseEntity<?> downloadRecommendationReport(Integer regionId, String planYear, boolean isDetails)throws IOException;
+
 
 }

@@ -26,29 +26,17 @@ public class ReportController {
 			@PathVariable(name = "regionId") Integer regionId,
 			@PathVariable(name = "regionType") Integer regionType,
 			@PathVariable(name = "planYear") String planYear) throws IOException {
-		return costingRptService.downloadStateDistCostingReport(regionId,regionType, planYear);
+		return costingRptService.downloadCostingReport(regionId,regionType, planYear);
 	}
 
 	
-	@GetMapping(value = "recommendation-details/{regionId}/{planYear}")
-	public ResponseEntity<?> fetchRecommendationDetailsReport(
+	
+	@GetMapping(value = "state-costing/{regionId}/{planYear}")
+	public ResponseEntity<?> fetchStateCostingReport(
 			@PathVariable(name = "regionId") Integer regionId,
 			@PathVariable(name = "planYear") String planYear) throws IOException {
 		
-		boolean isDetails=true;
-		return costingRptService.downloadRecommendationReport(regionId,planYear,isDetails);
+		return costingRptService.downloadStateCostingReport(regionId,planYear);
 	}
-	
-	
-	@GetMapping(value = "recommendation/{regionId}/{planYear}")
-	public ResponseEntity<?> fetchRecommendationReport(
-			@PathVariable(name = "regionId") Integer regionId,
-			@PathVariable(name = "planYear") String planYear) throws IOException {
-		
-		boolean isDetails=false;
-		return costingRptService.downloadRecommendationReport(regionId,planYear,isDetails);
-	}
-	
-	
 
 }
