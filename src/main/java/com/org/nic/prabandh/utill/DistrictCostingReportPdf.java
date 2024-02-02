@@ -180,7 +180,7 @@ public class DistrictCostingReportPdf {
 			
 			
 			////////////////////////////////////////////////////////////////////////////////
-			Table tableChart = new Table(UnitValue.createPercentArray(new float[] { 1f }));
+			/*Table tableChart = new Table(UnitValue.createPercentArray(new float[] { 1f }));
 			tableChart.setWidth(UnitValue.createPercentValue(100));
 			tableChart.setFixedLayout();
 			try {
@@ -212,7 +212,7 @@ public class DistrictCostingReportPdf {
 				datasetT.put("Series 3", 30.0);
 				datasetT.put("Series 4", 30.0);
 				datasetT.put("Series 5", 30.0);
-
+			
 				Object[] colorArrSBar= {new java.awt.Color(0, 92, 153)};
 				ImageData barImageDataBudget = DrawChartImage.generateSingleBarChart(datasetT,colorArrSBar, 4, "Budget(Recurring/Non-Recurring) vs Expenditure(Recurring/Non-Recurring)", "Particulars", "figures (In Lakhs)", 15, 12, 12);
 				Image barChartImageBudget = new Image(barImageDataBudget);
@@ -223,47 +223,47 @@ public class DistrictCostingReportPdf {
 				doc.add(CommonMethod.createParaGraphBold("Summary data", 0f, 0f, 12, paraFColor2, null, TextAlignment.CENTER));
 				Table table = new Table(UnitValue.createPercentArray(new float[] { .5f,1.5f,1f, 1.5f,1f, 1.5f,1f, 1.5f,1f,.5f,}));
 				table.setWidth(UnitValue.createPercentValue(100));
-
+			
 				
 				
 				
 				
 				int dataSize=15;
-		        Color[] colorArray1 = CommonMethod.genDarkToLightColor(new java.awt.Color(102, 34, 0), dataSize);
-		        Color[] colorArray2 = CommonMethod.genDarkToLightColor(new java.awt.Color(134, 45, 89), dataSize);
-		        Color[] colorArray3 = CommonMethod.genDarkToLightColor(new java.awt.Color(26, 83, 255), dataSize);
-		        Color[] colorArray4 = CommonMethod.genDarkToLightColor(new java.awt.Color(82, 122, 122), dataSize);
+			    Color[] colorArray1 = CommonMethod.genDarkToLightColor(new java.awt.Color(102, 34, 0), dataSize);
+			    Color[] colorArray2 = CommonMethod.genDarkToLightColor(new java.awt.Color(134, 45, 89), dataSize);
+			    Color[] colorArray3 = CommonMethod.genDarkToLightColor(new java.awt.Color(26, 83, 255), dataSize);
+			    Color[] colorArray4 = CommonMethod.genDarkToLightColor(new java.awt.Color(82, 122, 122), dataSize);
 				
-		        table.addCell(CommonMethod.createCellBold("Title Summary", 10, 1, 15).setTextAlignment(TextAlignment.CENTER).setBorder(null).setMinHeight(40).setUnderline());
-		        for (int i = 0; i < dataSize; i++) {
-		        	
-		        	Color fColor=DeviceRgb.WHITE;
-		        	if(i>(dataSize/3))
-		        		fColor=DeviceRgb.BLACK;
-		        	
-		        	if(i==0)
-		        		table.addCell(new Cell(dataSize,1).add(new Paragraph("All Figures in lakhs").setRotationAngle(Math.PI / 2)).setBorder(null).setVerticalAlignment(VerticalAlignment.MIDDLE));
+			    table.addCell(CommonMethod.createCellBold("Title Summary", 10, 1, 15).setTextAlignment(TextAlignment.CENTER).setBorder(null).setMinHeight(40).setUnderline());
+			    for (int i = 0; i < dataSize; i++) {
+			    	
+			    	Color fColor=DeviceRgb.WHITE;
+			    	if(i>(dataSize/3))
+			    		fColor=DeviceRgb.BLACK;
+			    	
+			    	if(i==0)
+			    		table.addCell(new Cell(dataSize,1).add(new Paragraph("All Figures in lakhs").setRotationAngle(Math.PI / 2)).setBorder(null).setVerticalAlignment(VerticalAlignment.MIDDLE));
 					
-		        	table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setMinHeight(20));
+			    	table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setMinHeight(20));
 					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray1[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
-
+			
 					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
 					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray2[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
 					
 					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
 					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray3[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
-
+			
 					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
 					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray4[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
 					
 					table.addCell(CommonMethod.createCellBold("", 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
-		        }
+			    }
 				tableChart.addCell(new Cell(1, 1).add(table));
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			doc.add(tableChart);
+			doc.add(tableChart);*/
 			////////////////////////////////////////////////////////////////////////////////
 			
 			
