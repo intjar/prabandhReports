@@ -1,4 +1,4 @@
-package com.org.nic.prabandh.utill;
+package com.org.nic.prabandh.pdf;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -54,6 +54,8 @@ import com.org.nic.prabandh.bean.RecurringNonRecurring;
 import com.org.nic.prabandh.bean.Spillover;
 import com.org.nic.prabandh.constant.Constants;
 import com.org.nic.prabandh.model.MastStatesTentative;
+import com.org.nic.prabandh.utill.CommonMethod;
+import com.org.nic.prabandh.utill.DrawChartImage;
 
 @Component
 public class RecommendationReptPdf {

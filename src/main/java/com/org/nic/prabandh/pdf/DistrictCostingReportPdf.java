@@ -1,4 +1,4 @@
-package com.org.nic.prabandh.utill;
+package com.org.nic.prabandh.pdf;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +37,6 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
@@ -51,6 +49,8 @@ import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
 import com.org.nic.prabandh.bean.ProposedCosting;
 import com.org.nic.prabandh.constant.Constants;
+import com.org.nic.prabandh.utill.CommonMethod;
+import com.org.nic.prabandh.utill.DrawChartImage;
 
 @Component
 public class DistrictCostingReportPdf {
@@ -183,84 +183,125 @@ public class DistrictCostingReportPdf {
 			/*Table tableChart = new Table(UnitValue.createPercentArray(new float[] { 1f }));
 			tableChart.setWidth(UnitValue.createPercentValue(100));
 			tableChart.setFixedLayout();
-			try {
-				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-				dataset.addValue(10, "Series 1", "Category 1");
-				dataset.addValue(20, "Series 2", "Category 1");
-				dataset.addValue(30, "Series 3", "Category 1");
+			try {*/
 				
-				dataset.addValue(15, "Series 1", "Category 2");
-				dataset.addValue(25, "Series 2", "Category 2");
-				dataset.addValue(35, "Series 3", "Category 2");
-				
-				dataset.addValue(15, "Series 1", "Category 3");
-				dataset.addValue(25, "Series 2", "Category 3");
-				dataset.addValue(35, "Series 3", "Category 3");
-				
-				Object[] colorArr= {(java.awt.Color.GREEN),java.awt.Color.RED,java.awt.Color.cyan,java.awt.Color.MAGENTA};
-				ImageData imageData = DrawChartImage.generateStackedBarChart(dataset,colorArr, "My Title", "Horizontal Axis", "Vertical Axis", 20, 16, 14);
-				Image sChartimage = new Image(imageData);
-				sChartimage.setAutoScale(true);
-				sChartimage.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				tableChart.addCell(new Cell(1, 1).add(sChartimage));
-				
-				
-				Map<String, Double> datasetT = new LinkedHashMap<>();
-				datasetT.put("Series 1", 10.0);
-				datasetT.put("Series 2", 20.0);
-				datasetT.put("Series 3", 30.0);
-				datasetT.put("Series 4", 30.0);
-				datasetT.put("Series 5", 30.0);
-			
-				Object[] colorArrSBar= {new java.awt.Color(0, 92, 153)};
-				ImageData barImageDataBudget = DrawChartImage.generateSingleBarChart(datasetT,colorArrSBar, 4, "Budget(Recurring/Non-Recurring) vs Expenditure(Recurring/Non-Recurring)", "Particulars", "figures (In Lakhs)", 15, 12, 12);
-				Image barChartImageBudget = new Image(barImageDataBudget);
-				barChartImageBudget.setAutoScale(true);
-				barChartImageBudget.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				tableChart.addCell(new Cell(1, 1).add(barChartImageBudget));
-				
-				doc.add(CommonMethod.createParaGraphBold("Summary data", 0f, 0f, 12, paraFColor2, null, TextAlignment.CENTER));
-				Table table = new Table(UnitValue.createPercentArray(new float[] { .5f,1.5f,1f, 1.5f,1f, 1.5f,1f, 1.5f,1f,.5f,}));
-				table.setWidth(UnitValue.createPercentValue(100));
-			
-				
-				
-				
-				
-				int dataSize=15;
-			    Color[] colorArray1 = CommonMethod.genDarkToLightColor(new java.awt.Color(102, 34, 0), dataSize);
-			    Color[] colorArray2 = CommonMethod.genDarkToLightColor(new java.awt.Color(134, 45, 89), dataSize);
-			    Color[] colorArray3 = CommonMethod.genDarkToLightColor(new java.awt.Color(26, 83, 255), dataSize);
-			    Color[] colorArray4 = CommonMethod.genDarkToLightColor(new java.awt.Color(82, 122, 122), dataSize);
-				
-			    table.addCell(CommonMethod.createCellBold("Title Summary", 10, 1, 15).setTextAlignment(TextAlignment.CENTER).setBorder(null).setMinHeight(40).setUnderline());
-			    for (int i = 0; i < dataSize; i++) {
-			    	
-			    	Color fColor=DeviceRgb.WHITE;
-			    	if(i>(dataSize/3))
-			    		fColor=DeviceRgb.BLACK;
-			    	
-			    	if(i==0)
-			    		table.addCell(new Cell(dataSize,1).add(new Paragraph("All Figures in lakhs").setRotationAngle(Math.PI / 2)).setBorder(null).setVerticalAlignment(VerticalAlignment.MIDDLE));
+		            // Create a DefaultCategoryDataset and populate it with dummy data
+			      
+					/*DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+					dataset.addValue(214925.90418, "Budget", "Elementary Education ");
+					dataset.addValue(63717.02160, "Budget", "Secondary Education");
+					dataset.addValue(1321.16000, "Budget", "Teacher Education");
+					dataset.addValue(279964.08578, "Budget", "Grand Total");
 					
-			    	table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setMinHeight(20));
-					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray1[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
-			
-					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
-					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray2[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
+					dataset.addValue(160687.54500, "Expenditure", "Elementary Education ");
+					dataset.addValue(58597.05700, "Expenditure", "Secondary Education");
+					dataset.addValue(1159.31000, "Expenditure", "Teacher Education");
+					dataset.addValue(220443.91200, "Expenditure", "Grand Total");
 					
-					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
-					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray3[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
-			
-					table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
-					table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray4[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
 					
-					table.addCell(CommonMethod.createCellBold("", 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
-			    }
-				tableChart.addCell(new Cell(1, 1).add(table));
+					
+					
+					// Create an array of Color objects for each category
+					Object[] colorArr = new Object[]{
+							java.awt.Color.cyan,
+							java.awt.Color.MAGENTA
+					};
+					
+					ImageData imageDataSpiderWeb = DrawChartImage.generateSpiderWebChart(dataset, colorArr, "My Spider Web Chart", 18, 15, 15);
+					Image imageSpiderWeb = new Image(imageDataSpiderWeb);
+					imageSpiderWeb.setAutoScale(true);
+					imageSpiderWeb.setHorizontalAlignment(HorizontalAlignment.CENTER);
+					doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					tableChart.addCell(new Cell(1, 1).add(imageSpiderWeb));*/
+		          
+
 				
-			} catch (Exception e) {
+				
+				
+				
+				
+				
+				
+				
+				
+				
+					/*doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+					dataset.addValue(10, "Series 1", "Category 1");
+					dataset.addValue(20, "Series 2", "Category 1");
+					dataset.addValue(30, "Series 3", "Category 1");
+					
+					dataset.addValue(15, "Series 1", "Category 2");
+					dataset.addValue(25, "Series 2", "Category 2");
+					dataset.addValue(35, "Series 3", "Category 2");
+					
+					dataset.addValue(15, "Series 1", "Category 3");
+					dataset.addValue(25, "Series 2", "Category 3");
+					dataset.addValue(35, "Series 3", "Category 3");
+					
+					Object[] colorArr= {(java.awt.Color.GREEN),java.awt.Color.RED,java.awt.Color.cyan,java.awt.Color.MAGENTA};
+					ImageData imageData = DrawChartImage.generateStackedBarChart(dataset,colorArr, "My Title", "Horizontal Axis", "Vertical Axis", 20, 16, 14);
+					Image sChartimage = new Image(imageData);
+					sChartimage.setAutoScale(true);
+					sChartimage.setHorizontalAlignment(HorizontalAlignment.CENTER);
+					tableChart.addCell(new Cell(1, 1).add(sChartimage));
+					
+					
+					Map<String, Double> datasetT = new LinkedHashMap<>();
+					datasetT.put("Series 1", 10.0);
+					datasetT.put("Series 2", 20.0);
+					datasetT.put("Series 3", 30.0);
+					datasetT.put("Series 4", 30.0);
+					datasetT.put("Series 5", 30.0);
+					
+					Object[] colorArrSBar= {new java.awt.Color(0, 92, 153)};
+					ImageData barImageDataBudget = DrawChartImage.generateSingleBarChart(datasetT,colorArrSBar, 4, "Budget(Recurring/Non-Recurring) vs Expenditure(Recurring/Non-Recurring)", "Particulars", "figures (In Lakhs)", 15, 12, 12);
+					Image barChartImageBudget = new Image(barImageDataBudget);
+					barChartImageBudget.setAutoScale(true);
+					barChartImageBudget.setHorizontalAlignment(HorizontalAlignment.CENTER);
+					tableChart.addCell(new Cell(1, 1).add(barChartImageBudget));
+					
+					doc.add(CommonMethod.createParaGraphBold("Summary data", 0f, 0f, 12, paraFColor2, null, TextAlignment.CENTER));
+					Table table = new Table(UnitValue.createPercentArray(new float[] { .5f,1.5f,1f, 1.5f,1f, 1.5f,1f, 1.5f,1f,.5f,}));
+					table.setWidth(UnitValue.createPercentValue(100));
+					
+					
+					
+					
+					
+					int dataSize=15;
+					Color[] colorArray1 = CommonMethod.genDarkToLightColor(new java.awt.Color(102, 34, 0), dataSize);
+					Color[] colorArray2 = CommonMethod.genDarkToLightColor(new java.awt.Color(134, 45, 89), dataSize);
+					Color[] colorArray3 = CommonMethod.genDarkToLightColor(new java.awt.Color(26, 83, 255), dataSize);
+					Color[] colorArray4 = CommonMethod.genDarkToLightColor(new java.awt.Color(82, 122, 122), dataSize);
+					
+					table.addCell(CommonMethod.createCellBold("Title Summary", 10, 1, 15).setTextAlignment(TextAlignment.CENTER).setBorder(null).setMinHeight(40).setUnderline());
+					for (int i = 0; i < dataSize; i++) {
+						
+						Color fColor=DeviceRgb.WHITE;
+						if(i>(dataSize/3))
+							fColor=DeviceRgb.BLACK;
+						
+						if(i==0)
+							table.addCell(new Cell(dataSize,1).add(new Paragraph("All Figures in lakhs").setRotationAngle(Math.PI / 2)).setBorder(null).setVerticalAlignment(VerticalAlignment.MIDDLE));
+						
+						table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setMinHeight(20));
+						table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray1[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
+					
+						table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
+						table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray2[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
+						
+						table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
+						table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray3[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
+					
+						table.addCell(CommonMethod.createCellBold("Series-"+i, 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
+						table.addCell(CommonMethod.createCellBold(""+(dataSize-i), 1, 1, 9).setBackgroundColor(colorArray4[i]).setTextAlignment(TextAlignment.RIGHT).setBorder(null).setFontColor(fColor));
+						
+						table.addCell(CommonMethod.createCellBold("", 1, 1, 9).setTextAlignment(TextAlignment.RIGHT).setBorder(null));
+					}
+					tableChart.addCell(new Cell(1, 1).add(table));*/
+				
+			/*} catch (Exception e) {
 				e.printStackTrace();
 			}
 			doc.add(tableChart);*/

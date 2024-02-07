@@ -18,15 +18,15 @@ import com.org.nic.prabandh.bean.Spillover;
 import com.org.nic.prabandh.model.MastStatesTentative;
 import com.org.nic.prabandh.model.MasterDistricts;
 import com.org.nic.prabandh.model.MstStateModel;
+import com.org.nic.prabandh.pdf.DistrictCostingReportPdf;
+import com.org.nic.prabandh.pdf.RecommendationDeatilsReptPdf;
+import com.org.nic.prabandh.pdf.RecommendationReptPdf;
+import com.org.nic.prabandh.pdf.StateCostingReportPdf;
 import com.org.nic.prabandh.repository.DistrictsMasrerRepository;
 import com.org.nic.prabandh.repository.MastStatesTentativeRepository;
 import com.org.nic.prabandh.repository.RecommendationRptRepository;
 import com.org.nic.prabandh.repository.StateDistCostRptRepository;
 import com.org.nic.prabandh.repository.StateMasterRepository;
-import com.org.nic.prabandh.utill.DistrictCostingReportPdf;
-import com.org.nic.prabandh.utill.RecommendationDeatilsReptPdf;
-import com.org.nic.prabandh.utill.RecommendationReptPdf;
-import com.org.nic.prabandh.utill.StateCostingReportPdf;
 
 @Service
 public class CostingRptServiceImpl implements CostingRptService {

@@ -1,4 +1,4 @@
-package com.org.nic.prabandh.utill;
+package com.org.nic.prabandh.pdf;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -38,7 +38,6 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
@@ -55,6 +54,8 @@ import com.org.nic.prabandh.bean.RecurringNonRecurring;
 import com.org.nic.prabandh.bean.Spillover;
 import com.org.nic.prabandh.constant.Constants;
 import com.org.nic.prabandh.model.MastStatesTentative;
+import com.org.nic.prabandh.utill.CommonMethod;
+import com.org.nic.prabandh.utill.DrawChartImage;
 
 @Component
 public class RecommendationDeatilsReptPdf {
@@ -240,6 +241,10 @@ public class RecommendationDeatilsReptPdf {
 				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 				doc.add(CommonMethod.createParaGraphBold("Major Component wise Details", 30f, 0f, 15, paraFColor3, null, TextAlignment.CENTER));
 				Table tableComponentDetails = getMajorCompoDetails(doc, majorComponentProposal, planYear);
+				doc.add(tableComponentDetails);
+			}
+			if (majorComponentProposal != null && majorComponentProposal.size() > 0) {
+				Table tableComponentDetails = getSpiderChartMajorCompoDetails(doc, majorComponentProposal, planYear);
 				doc.add(tableComponentDetails);
 			}
 			// ---------------------------------------------------------
@@ -888,6 +893,60 @@ public class RecommendationDeatilsReptPdf {
 				}
 				sno++;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return table;
+		}
+		return table;
+	}
+	
+	private Table getSpiderChartMajorCompoDetails(Document doc, List<MajorComponentProposal> majorComponentProposal, String planYear) throws IOException {
+		
+		Table table = new Table(UnitValue.createPercentArray(new float[] {1f}));
+		table.setWidth(UnitValue.createPercentValue(100));
+		table.setFixedLayout();
+		
+		
+		try {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			for (MajorComponentProposal listObj : majorComponentProposal) {
+				if (listObj.getMajorComponentName() != null && !listObj.getMajorComponentName().equals("Total")) {
+					
+					Double totalExpPercent=0d;
+					if(listObj.getTotApprovedBudget() !=null && listObj.getTotApprovedBudget()>0) {
+						totalExpPercent =(listObj.getTotExpenditure() / listObj.getTotApprovedBudget() * 100);
+					}
+					String componentName=listObj.getMajorComponentName()+"("+dfWithTwoDig.format(totalExpPercent)+")";
+					
+					Double totApprovedBudget=0d;
+					if(listObj.getTotApprovedBudget() !=null)
+						totApprovedBudget=listObj.getTotApprovedBudget();
+					
+					Double totExpenditure=0d;
+					if(listObj.getTotExpenditure() !=null)
+						totExpenditure=listObj.getTotExpenditure();
+					
+					
+					
+					
+					dataset.addValue(totApprovedBudget, "Budget", componentName);
+					dataset.addValue(totExpenditure, "Expenditure", componentName);
+					
+				}
+			}
+
+			Object[] colorArr = new Object[]{
+				java.awt.Color.cyan,
+				java.awt.Color.MAGENTA
+			};
+
+			ImageData imageDataSpiderWeb = DrawChartImage.generateSpiderWebChart(dataset, colorArr, "Major Component wise Details Web Chart", 18, 14, 10);
+			Image imageSpiderWeb = new Image(imageDataSpiderWeb);
+			imageSpiderWeb.setAutoScale(true);
+			imageSpiderWeb.setHorizontalAlignment(HorizontalAlignment.CENTER);
+			doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+			table.addCell(new Cell(1, 1).add(imageSpiderWeb).setBorder(null));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return table;

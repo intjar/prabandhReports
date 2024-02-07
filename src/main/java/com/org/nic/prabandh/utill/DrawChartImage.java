@@ -1,16 +1,25 @@
 package com.org.nic.prabandh.utill;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.TextAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
@@ -20,6 +29,7 @@ import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.CenterTextMode;
@@ -27,19 +37,25 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.RingPlot;
+import org.jfree.chart.plot.SpiderWebPlot;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.UnitType;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.pdf.annot.PdfTextAnnotation;
 
 public class DrawChartImage {
 
@@ -394,21 +410,77 @@ public class DrawChartImage {
 	
 	
 	
-	
-	
-	public static ImageData generateLineChart(DefaultCategoryDataset lineDataset, String string, String string2, String string3, int titleSize, int legendSize, int labelSize) {
-		
-		JFreeChart chart = ChartFactory.createLineChart( string, string2, string3, lineDataset);
-		
-		
-		TextTitle title = chart.getTitle();
-		Font titleFont = new Font("Helvetica-Bold", title.getFont().getStyle(), titleSize);
-		title.setFont(titleFont);
+	public static ImageData generateSpiderWebChart(DefaultCategoryDataset dataset, Object[] colorArr, String titleText, int titleSize, int legendSize, int labelSize) throws IOException {
+		SpiderWebPlot spiderWebPlot = new SpiderWebPlot(dataset);
+	    //spiderWebPlot.setStartAngle(54);
+	    //spiderWebPlot.setInteriorGap(0.30);
+	    
+	    spiderWebPlot.setStartAngle(Math.PI / 4); // Start angle in radians
+	    spiderWebPlot.setInteriorGap(0.40); // Interior gap
+	    
+	    //spiderWebPlot.setMaxValue(300);
+	    //spiderWebPlot.setMaxValue(14297);
+	    
+	    spiderWebPlot.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+	    spiderWebPlot.setLabelFont(new Font("Arial", Font.BOLD, labelSize));
 
-		LegendTitle legend = chart.getLegend();
-		Font legendFont = new Font("Helvetica-Bold", Font.BOLD, legendSize);
-		legend.setItemFont(legendFont);
-		
-		return null;
+	    JFreeChart chart = new JFreeChart(titleText, JFreeChart.DEFAULT_TITLE_FONT, spiderWebPlot, true);
+	    
+	    chart.setTitle(new TextTitle(titleText, new Font("Serif", Font.BOLD, titleSize)));
+	    chart.setBackgroundPaint(null);
+
+	    LegendTitle legend = chart.getLegend();
+	    legend.setFrame(BlockBorder.NONE);
+	    Font legendFont = new Font("Serif", Font.BOLD, legendSize);
+	    legend.setItemFont(legendFont);
+
+	    for (int i = 0; i < colorArr.length; i++) {
+	        spiderWebPlot.setSeriesPaint(i, (Color) colorArr[i]);
+	
+	    }
+
+	    ChartPanel chartPanel = new ChartPanel(chart);
+	    chartPanel.setPreferredSize(new Dimension(1500, 1270));
+
+
+	    CategoryItemLabelGenerator generator = new CategoryItemLabelGenerator() {
+	        @Override
+	        public String generateLabel(CategoryDataset dataset, int row, int column) {
+	            Number value = dataset.getValue(row, column);
+	            if (value != null) {
+	                return value.toString();
+	            } else {
+	                return "";
+	            }
+	        }
+
+	        @Override
+	        public String generateRowLabel(CategoryDataset dataset, int row) {
+	            return dataset.getRowKey(row).toString();
+	        }
+
+	        @Override
+	        public String generateColumnLabel(CategoryDataset dataset, int column) {
+	            return dataset.getColumnKey(column).toString();
+	        }
+	    };
+	    
+	    spiderWebPlot.setLabelGenerator(generator);
+
+	    //-----------------------------------------------------------------
+	    
+	    
+	    
+	    // Convert JFreeChart to Image
+	    BufferedImage bufferedImage = chart.createBufferedImage(800, 600);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    ImageIO.write(bufferedImage, "png", baos);
+	    byte[] bytes = baos.toByteArray();
+
+	    // Convert bytes to ImageData using iText7
+	    ImageData imageData = ImageDataFactory.create(bytes);
+
+	    return imageData;
 	}
+
 }
