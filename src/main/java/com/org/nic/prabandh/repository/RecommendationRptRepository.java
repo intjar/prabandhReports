@@ -1,12 +1,14 @@
 package com.org.nic.prabandh.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.org.nic.prabandh.bean.MajorComponentDarftPABProposal;
 import com.org.nic.prabandh.bean.MajorComponentProposal;
 import com.org.nic.prabandh.bean.ProposedCosting;
 import com.org.nic.prabandh.bean.RecurringNonRecurring;
@@ -34,7 +36,7 @@ public interface RecommendationRptRepository extends CrudRepository<MstStateMode
 			+ "		  sum(approved_budget_recurring) as approved_budget_recurring,sum(expenditure_recurring_31) as expenditure_recurring_31,sum(approved_budget_non_recurring) as approved_budget_non_recurring,\r\n"
 			+ "		  sum(expenditure_non_recurring_31) as expenditure_non_recurring_31,sum(SpillOverApproval23) as SpillOverApproval23,sum(AnticipatedExpenditureSpillOver) as AnticipatedExpenditureSpillOver,sum(financial_amount) as financial_amount, sum(physical_quantity) as physical_quantity,\r\n"
 			+ "		  sum(financial_amount)/ nullif(sum(physical_quantity),0) as unit_cost,sum(proposed_financial_amount) as proposed_financial_amount, sum(proposed_physical_quantity) as proposed_physical_quantity,sum(proposed_financial_amount)/ nullif(sum(proposed_physical_quantity),0) as proposed_unit_cost from (\r\n"
-			+ "select aa.scheme_id,aa.major_component_id,aa.sub_component_id,aa.activity_master_id,aa.activity_master_details_id,\r\n"
+			+ "select aa.scheme_id\\:\\:numeric,aa.major_component_id,aa.sub_component_id,aa.activity_master_id,aa.activity_master_details_id,\r\n"
 			+ "approved_budget_recurring,expenditure_recurring_31,approved_budget_non_recurring,expenditure_non_recurring_31,AnticipatedExpenditureSpillOver,SpillOverApproval23,0 as financial_amount, 0 as physical_quantity,0 as unit_cost,0 as proposed_financial_amount, 0 as proposed_physical_quantity,0 as proposed_unit_cost from \r\n"
 			+ " (select scheme_id,major_component_id,sub_component_id,activity_master_id,activity_master_details_id,budget_amount as approved_budget_recurring,progress_amount as expenditure_recurring_31,\r\n"
 			+ " 0 as approved_budget_non_recurring,0 as expenditure_non_recurring_31,0 as AnticipatedExpenditureSpillOver,\r\n"
@@ -79,7 +81,135 @@ public interface RecommendationRptRepository extends CrudRepository<MstStateMode
 			+ "       order by dd.schemeId , dd.majorComponentId , dd.subComponentId , dd.activityMasterId ,dd.activityMasterDetailsId,dd.serial_order")
 	public List<ProposedCosting> findAllByStateAndPlanYear(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
 	
+	/*@Query(nativeQuery = true, value = "select dd.*,bb.coordinatorRemarks from( (select round(bb.financial_amount,5) as financialAmount,round(bb.unit_cost,5)as unitCost,bb.physical_quantity\\:\\:numeric as physicalQuantity,round(bb.proposed_financial_amount,5) as proposedFinancialAmount,round(bb.proposed_unit_cost,5)as proposedUnitCost,bb.proposed_physical_quantity\\:\\:numeric as proposedPhysicalQuantity, case when (bb.activity_master_id is null ) then 888888 else bb.activity_master_id end as activityMasterId, case when (bb.sub_component_id is null ) then 777777 else bb.sub_component_id end as subComponentId, case when (bb.major_component_id is null ) then 666666 else bb.major_component_id end as majorComponentId, case when (bb.scheme_id is null ) then '555555' else bb.scheme_id end as schemeId, case when (bb.activity_master_details_id is null ) then 999999 else bb.activity_master_details_id end as activityMasterDetailsId, case when (pd.recuring_nonrecuring = 1 ) then 'R' when (pd.recuring_nonrecuring = 2) then 'NR' else 'NA' end as recuringNonrecuring, ps.title as schemeName, pmc.title as majorComponentName , psc.title as subComponentName , pam.title as activityMasterName , pd.activity_master_details_name as activityMasterDetailName,pd.serial_order from ( select cc.scheme_id,cc.major_component_id,cc.sub_component_id,cc.activity_master_id,cc.activity_master_details_id, sum(financial_amount) as financial_amount, sum(physical_quantity) as physical_quantity, sum(financial_amount)/ nullif(sum(physical_quantity),0) as unit_cost,sum(proposed_financial_amount) as proposed_financial_amount, sum(proposed_physical_quantity) as proposed_physical_quantity,sum(proposed_financial_amount)/ nullif(sum(proposed_physical_quantity),0) as proposed_unit_cost from ( SELECT pawpbd.scheme_id, pawpbd.major_component_id, pawpbd.sub_component_id, pawpbd.activity_master_id, pawpbd.activity_master_details_id, pawpbd.financial_amount AS financial_amount, pawpbd.physical_quantity AS physical_quantity, pawpbd.financial_amount/ nullif(pawpbd.physical_quantity,0) as unit_cost, pawpbd.proposed_financial_amount AS proposed_financial_amount, pawpbd.proposed_physical_quantity AS proposed_physical_quantity, pawpbd.proposed_financial_amount/ nullif(pawpbd.proposed_physical_quantity,0) as proposed_unit_cost FROM prb_state_ann_wrk_pln_bdgt_data pawpbd WHERE pawpbd.state = :stateId and pawpbd.plan_year=:planYear and pawpbd.proposed_financial_amount >0 ) cc GROUP BY GROUPING SETS ((cc.scheme_id, cc.major_component_id, cc.sub_component_id, cc.activity_master_id, cc.activity_master_details_id), (cc.scheme_id, cc.major_component_id, cc.sub_component_id, cc.activity_master_id), (cc.scheme_id, cc.major_component_id, cc.sub_component_id), (cc.scheme_id, cc.major_component_id), (cc.scheme_id), ()) ) bb left join prb_data pd on (pd.id= bb.activity_master_details_id) left join prb_activity_master pam on (pam.id= bb.activity_master_id) left join prb_sub_component psc on (psc.sub_component_id= bb.sub_component_id) left join prb_major_component pmc on (pmc.prb_major_component_id = bb.major_component_id) left join prb_schemes ps on (ps.id= bb.scheme_id\\:\\:numeric)) dd left join (Select activity_master_details_id,coordinator_remarks as coordinatorRemarks from prb_state_ann_wrk_pln_bdgt_data ab "
+			+ "where ab.plan_year=:planYear and ab.state=:stateId) bb on (bb.activity_master_details_id= dd.activityMasterDetailsId))order by dd.schemeId , dd.majorComponentId , dd.subComponentId , dd.activityMasterId ,dd.activityMasterDetailsId,dd.serial_order")
+	public List<ProposedCosting> findAllDaftPABByStateAndPlanYear(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
+	*/
 	
+	@Query(nativeQuery = true, value = "select\r\n"
+			+ "	dd.*,\r\n"
+			+ "	bb.coordinatorRemarks\r\n"
+			+ "from\r\n"
+			+ "	( (\r\n"
+			+ "	select\r\n"
+			+ "		round(bb.financial_amount, 5) as financialAmount,\r\n"
+			+ "		round(bb.unit_cost, 5)as unitCost,\r\n"
+			+ "		bb.physical_quantity\\:\\:numeric as physicalQuantity,\r\n"
+			+ "		round(bb.proposed_financial_amount, 5) as proposedFinancialAmount,\r\n"
+			+ "		round(bb.proposed_unit_cost, 5)as proposedUnitCost,\r\n"
+			+ "		bb.proposed_physical_quantity\\:\\:numeric as proposedPhysicalQuantity,\r\n"
+			+ "		case\r\n"
+			+ "			when (bb.activity_master_id is null ) then 888888\r\n"
+			+ "			else bb.activity_master_id\r\n"
+			+ "		end as activityMasterId,\r\n"
+			+ "		case\r\n"
+			+ "			when (bb.sub_component_id is null ) then 777777\r\n"
+			+ "			else bb.sub_component_id\r\n"
+			+ "		end as subComponentId,\r\n"
+			+ "		case\r\n"
+			+ "			when (bb.major_component_id is null ) then 666666\r\n"
+			+ "			else bb.major_component_id\r\n"
+			+ "		end as majorComponentId,\r\n"
+			+ "		case\r\n"
+			+ "			when (bb.scheme_id is null ) then '555555'\r\n"
+			+ "			else bb.scheme_id\r\n"
+			+ "		end as schemeId,\r\n"
+			+ "		case\r\n"
+			+ "			when (bb.activity_master_details_id is null ) then 999999\r\n"
+			+ "			else bb.activity_master_details_id\r\n"
+			+ "		end as activityMasterDetailsId,\r\n"
+			+ "		case\r\n"
+			+ "			when (pd.recuring_nonrecuring = 1 ) then 'R'\r\n"
+			+ "			when (pd.recuring_nonrecuring = 2) then 'NR'\r\n"
+			+ "			else 'NA'\r\n"
+			+ "		end as recuringNonrecuring,\r\n"
+			+ "		ps.title as schemeName,\r\n"
+			+ "		pmc.title as majorComponentName ,\r\n"
+			+ "		psc.title as subComponentName ,\r\n"
+			+ "		pam.title as activityMasterName ,\r\n"
+			+ "		pd.activity_master_details_name as activityMasterDetailName,\r\n"
+			+ "		pd.serial_order\r\n"
+			+ "	from\r\n"
+			+ "		(\r\n"
+			+ "		select\r\n"
+			+ "			cc.scheme_id,\r\n"
+			+ "			cc.major_component_id,\r\n"
+			+ "			cc.sub_component_id,\r\n"
+			+ "			cc.activity_master_id,\r\n"
+			+ "			cc.activity_master_details_id,\r\n"
+			+ "			sum(financial_amount) as financial_amount,\r\n"
+			+ "			sum(physical_quantity) as physical_quantity,\r\n"
+			+ "			sum(financial_amount)/ nullif(sum(physical_quantity), 0) as unit_cost,\r\n"
+			+ "			sum(proposed_financial_amount) as proposed_financial_amount,\r\n"
+			+ "			sum(proposed_physical_quantity) as proposed_physical_quantity,\r\n"
+			+ "			sum(proposed_financial_amount)/ nullif(sum(proposed_physical_quantity), 0) as proposed_unit_cost\r\n"
+			+ "		from\r\n"
+			+ "			(\r\n"
+			+ "			select\r\n"
+			+ "				pawpbd.scheme_id,\r\n"
+			+ "				pawpbd.major_component_id,\r\n"
+			+ "				pawpbd.sub_component_id,\r\n"
+			+ "				pawpbd.activity_master_id,\r\n"
+			+ "				pawpbd.activity_master_details_id,\r\n"
+			+ "				pawpbd.financial_amount as financial_amount,\r\n"
+			+ "				pawpbd.physical_quantity as physical_quantity,\r\n"
+			+ "				pawpbd.financial_amount / nullif(pawpbd.physical_quantity, 0) as unit_cost,\r\n"
+			+ "				pawpbd.proposed_financial_amount as proposed_financial_amount,\r\n"
+			+ "				pawpbd.proposed_physical_quantity as proposed_physical_quantity,\r\n"
+			+ "				pawpbd.proposed_financial_amount / nullif(pawpbd.proposed_physical_quantity, 0) as proposed_unit_cost\r\n"
+			+ "			from\r\n"
+			+ "				prb_state_ann_wrk_pln_bdgt_data pawpbd\r\n"
+			+ "			where\r\n"
+			+ "				pawpbd.state = :stateId\r\n"
+			+ "				and pawpbd.plan_year = :planYear\r\n"
+			+ "				 ) cc\r\n"
+			+ "		group by\r\n"
+			+ "			grouping sets ((cc.scheme_id,\r\n"
+			+ "			cc.major_component_id,\r\n"
+			+ "			cc.sub_component_id,\r\n"
+			+ "			cc.activity_master_id,\r\n"
+			+ "			cc.activity_master_details_id),\r\n"
+			+ "			(cc.scheme_id,\r\n"
+			+ "			cc.major_component_id,\r\n"
+			+ "			cc.sub_component_id,\r\n"
+			+ "			cc.activity_master_id),\r\n"
+			+ "			(cc.scheme_id,\r\n"
+			+ "			cc.major_component_id,\r\n"
+			+ "			cc.sub_component_id),\r\n"
+			+ "			(cc.scheme_id,\r\n"
+			+ "			cc.major_component_id),\r\n"
+			+ "			(cc.scheme_id),\r\n"
+			+ "			()) ) bb\r\n"
+			+ "	left join prb_data pd on\r\n"
+			+ "		(pd.id = bb.activity_master_details_id)\r\n"
+			+ "	left join prb_activity_master pam on\r\n"
+			+ "		(pam.id = bb.activity_master_id)\r\n"
+			+ "	left join prb_sub_component psc on\r\n"
+			+ "		(psc.sub_component_id = bb.sub_component_id)\r\n"
+			+ "	left join prb_major_component pmc on\r\n"
+			+ "		(pmc.prb_major_component_id = bb.major_component_id)\r\n"
+			+ "	left join prb_schemes ps on\r\n"
+			+ "		(ps.id = bb.scheme_id\\:\\:numeric)) dd\r\n"
+			+ "left join (\r\n"
+			+ "	select\r\n"
+			+ "		activity_master_details_id,\r\n"
+			+ "		coordinator_remarks as coordinatorRemarks\r\n"
+			+ "	from\r\n"
+			+ "		prb_state_ann_wrk_pln_bdgt_data ab\r\n"
+			+ "	where\r\n"
+			+ "		ab.plan_year = :planYear\r\n"
+			+ "		and ab.state = :stateId) bb on\r\n"
+			+ "	(bb.activity_master_details_id = dd.activityMasterDetailsId))\r\n"
+			+ "	where proposedfinancialamount >0\r\n"
+			+ "order by\r\n"
+			+ "	dd.schemeId ,\r\n"
+			+ "	dd.majorComponentId ,\r\n"
+			+ "	dd.subComponentId ,\r\n"
+			+ "	dd.activityMasterId ,\r\n"
+			+ "	dd.activityMasterDetailsId,\r\n"
+			+ "	dd.serial_order")
+	public List<ProposedCosting> findAllDaftPABByStateAndPlanYear(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
+
 		@Query(nativeQuery=true, value ="select majorComponentName,round(coalesce(approvedBudgetRecurring,0),5) as approvedBudgetRecurring,round(coalesce(approvedBudgetNonRecurring,0),5) as approvedBudgetNonRecurring,\r\n"
 				+ "round((coalesce(approvedBudgetNonRecurring,0)+coalesce(approvedBudgetRecurring,0)),5) as TotApprovedBudget,round(coalesce(expenditureRecurring_31,0),5) as expenditureRecurring_31,\r\n"
 				+ "round(coalesce(expenditureNonRecurring_31,0),5) as expenditureNonRecurring_31,round((coalesce(expenditureRecurring_31,0)+coalesce(expenditureNonRecurring_31,0)),5) as TotExpenditure,\r\n"
@@ -125,6 +255,7 @@ public interface RecommendationRptRepository extends CrudRepository<MstStateMode
 				+ "order by majorComponentName")
 		public List<MajorComponentProposal> findMajorComponentProposalForStateRecommendation(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
 
+		
 		
 		@Query(nativeQuery=true, value ="select\r\n"
 				+ "sum(financial_amount) filter (where pd.recuring_nonrecuring= 1) as recuring,\r\n"
@@ -194,9 +325,12 @@ public interface RecommendationRptRepository extends CrudRepository<MstStateMode
 		
 		
 		
+
+		
 		@Query(nativeQuery=true, value ="select ps.title as SchemeName,aa.SpillOverApproval23,aa.AnticipatedExpenditureSpillOver\r\n"
 				+ "from (\r\n"
-				+ "	select scheme_id,round(coalesce(sum(financial_amount_cummu_inception),0),5) as SpillOverApproval23,round(coalesce(sum(financial_amount_progress_inception),0),5) as AnticipatedExpenditureSpillOver\r\n"
+				+ "	select scheme_id,round(coalesce(sum( coalesce (financial_amount_cummu_inception,0) +	coalesce (fresh_approval_financial_amount,0) ),0),5) as SpillOverApproval23, \r\n"
+				+ "	round(coalesce(sum(coalesce (financial_amount_progress_inception,0) + coalesce (exp_against_fresh_app_fin,0)),0),5) as AnticipatedExpenditureSpillOver \r\n"
 				+ "	from prb_ann_wrk_pln_bdgt_spill_over where state=:stateId \r\n"
 				+ "	group by scheme_id\r\n"
 				+ ") aa \r\n"
@@ -222,5 +356,10 @@ public interface RecommendationRptRepository extends CrudRepository<MstStateMode
 				+ "group by grouping sets ((pmc.title,cc.recuringNonrecuring),(pmc.title),())\r\n"
 				+ "order by majorComponentName, recuringNonrecuring	")
 		public List<MajorComponentProposal> findMajorComponentStatePlan(@Param("stateId") Integer stateId, @Param("planYear") String planYear);
+
+
+		
+		@Query(nativeQuery = true, value = "SELECT pab_minute_status FROM report.master_states_minutes WHERE state_id = :stateId")
+	    List<Object[]> findIsDraftOrNot(@Param("stateId") Integer stateId);
 
 }

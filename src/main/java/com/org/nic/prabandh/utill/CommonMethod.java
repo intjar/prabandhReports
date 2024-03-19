@@ -70,7 +70,7 @@ public class CommonMethod {
 		PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
 		Cell cell = new Cell(rowspan, colspan).add(new Paragraph(content).setFont(font).setFontSize(fontSize));
 		cell.setTextAlignment(textAlignment);
-		cell.setVerticalAlignment(VerticalAlignment.MIDDLE);
+		//cell.setVerticalAlignment(VerticalAlignment.MIDDLE);
 		Border borderColor = new SolidBorder(new DeviceRgb(111,107,107), 0.5f);
 		cell.setBorder(borderColor);
 		if(bgColor !=null) {
@@ -113,7 +113,8 @@ public class CommonMethod {
 		para.setFontSize(fontSize);
 		para.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA));
 		para.setTextAlignment(textAlignment);
-		para.setFontColor(fColor);
+		if(fColor !=null)
+			para.setFontColor(fColor);
 		if(bgColor !=null)
 			para.setBackgroundColor(fColor);
 		return para;
@@ -125,7 +126,8 @@ public class CommonMethod {
 		para.setFontSize(fontSize);
 		para.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD));
 		para.setTextAlignment(textAlignment);
-		para.setFontColor(fColor);
+		if(fColor !=null)
+			para.setFontColor(fColor);
 		if(bgColor !=null)
 			para.setBackgroundColor(fColor);
 		return para;

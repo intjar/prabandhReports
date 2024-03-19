@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ import com.org.nic.prabandh.utill.CommonMethod;
 import com.org.nic.prabandh.utill.DrawChartImage;
 
 @Component
-public class RecommendationReptPdf {
+public class DraftPABDetailsReptPdf {
 
 	DecimalFormat df = new DecimalFormat("0.00000");
 	DecimalFormat dfWithoutZero = new DecimalFormat("#.##");
@@ -137,30 +138,22 @@ public class RecommendationReptPdf {
 						.showTextAligned("F. Y. - " + planYear, 725, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
 			}
 
-			/*ImageData imageData;
-			Image image = null;
+			/*Image image = null;
+			Image imageDraft = null;
 			try {
-				InputStream is = getClass().getResourceAsStream("/static/prabandh-nic.png");
-				imageData = ImageDataFactory.create(inputStreamToByteArray(is));
-				image = new Image(imageData);
+				image = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/prabandh-nic.png"))));
 				image.scaleAbsolute(200, 25);
 				image.setFixedPosition(32, 6);
+				
+				imageDraft = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/draft-water-mark.png"))));
+				imageDraft.scaleAbsolute(520, 520);
+				imageDraft.setFixedPosition(140, 60);
+				
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-			
-			PdfExtGState gstate = new PdfExtGState();
-			PdfCanvas canvasImage = new PdfCanvas(page);
-			canvasImage.saveState();
-			canvasImage.setExtGState(gstate);
-			try (Canvas canvas2 = new Canvas(canvasImage, pdfDoc, pageSize)) {
-				canvas2.add(image);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			canvasImage.restoreState();*/
-			
-			
+			}*/
+
+
 			PdfCanvas canvasImage = new PdfCanvas(page);
 			canvasImage.saveState();
 			canvasImage.setExtGState(new PdfExtGState());
@@ -193,13 +186,116 @@ public class RecommendationReptPdf {
 				}
 			}
 			
+			
+		}
+
+		pdfDoc.close();
+		return baos.toByteArray();
+	}
+	
+	
+	@SuppressWarnings("resource")
+	public byte[] addFooterAndPageNumbersDraftPAB(byte[] pdf, String regionName, String planYear, Integer isDraft) throws Exception {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PdfReader reader = new PdfReader(new ByteArrayInputStream(pdf));
+
+		PdfWriter writer = new PdfWriter(baos);
+		PdfDocument pdfDoc = new PdfDocument(reader, writer);
+		int numberOfPages = pdfDoc.getNumberOfPages();
+		// PdfFont font = PdfFontFactory.createFont();
+		PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+
+		for (int i = 1; i <= numberOfPages; i++) {
+			PdfPage page = pdfDoc.getPage(i);
+			Rectangle pageSize = page.getPageSize();
+			PdfCanvas pdfCanvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdfDoc);
+
+			String pageInfo = "Page no " + Integer.toString(pdfDoc.getPageNumber(page)) + " of " + numberOfPages;
+			String formattedDate = sdf.format(new Date());
+
+			new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(font).setFontSize(9).showTextAligned(pageInfo, pageSize.getWidth() / 2, 20, TextAlignment.CENTER, VerticalAlignment.MIDDLE, 0);
+			/*.showTextAligned("Generated on " + formattedDate, 403, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0).setFontColor(new DeviceRgb(165,42,42))
+			.showTextAligned("https://prabandh.education.gov.in", 403, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0).setFontColor(new DeviceRgb(165,42,42));*/
+
+			new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(font).setFontSize(9).setFontColor(new DeviceRgb(12, 49, 99))
+					.showTextAligned("Generated on " + formattedDate, 640, 28, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+					.showTextAligned("https://prabandh.education.gov.in", 640, 15, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+
+			if (i > 1 && i <= 6) {
+				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(10).setFontColor(new DeviceRgb(255, 0, 0))
+						.showTextAligned("*All figures (In Lakhs)", 700, 560, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+			}
+
+			if (i > 6) {
+//				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(8).setFontColor(new DeviceRgb(0, 0, 0))
+//						.add(CommonMethod.createParaGraphBold("", 0f, 0f, 10, new DeviceRgb(255, 128, 128), new DeviceRgb(255, 128, 128), TextAlignment.CENTER).setHeight(10f).setFixedPosition(385, 562, 10f).setBorder(new SolidBorder(DeviceRgb.BLACK, 0.2f)))
+//						.showTextAligned("No fund Recommended", 400, 567, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+//
+//				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(8).setFontColor(new DeviceRgb(0, 0, 0))
+//						.add(CommonMethod.createParaGraphBold("", 0f, 0f, 10, new DeviceRgb(255, 255, 51), new DeviceRgb(255, 255, 51), TextAlignment.CENTER).setHeight(10f).setFixedPosition(500, 562, 10f).setBorder(new SolidBorder(DeviceRgb.BLACK, 0.1f)))
+//						.showTextAligned("Less fund Recommended", 515, 567, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+
+				new Canvas(pdfCanvas, pdfDoc, pageSize).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(9).setFontColor(new DeviceRgb(165, 42, 42))
+						.showTextAligned("Budget Demand  - " + regionName, 37, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0)
+						.showTextAligned("F. Y. - " + planYear, 725, 570, TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+			}
+
+			/*Image image = null;
+			Image imageDraft = null;
+			try {
+				image = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/prabandh-nic.png"))));
+				image.scaleAbsolute(200, 25);
+				image.setFixedPosition(32, 6);
+				
+				imageDraft = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/draft-water-mark.png"))));
+				imageDraft.scaleAbsolute(520, 520);
+				imageDraft.setFixedPosition(140, 60);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
+
+
+			PdfCanvas canvasImage = new PdfCanvas(page);
+			canvasImage.saveState();
+			canvasImage.setExtGState(new PdfExtGState());
+			try (Canvas canvas = new Canvas(canvasImage, pdfDoc, pageSize)) {
+				Image image = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/prabandh-nic.png"))));
+				image.scaleAbsolute(200, 25);
+				image.setFixedPosition(32, 6);
+				canvas.add(image);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				canvasImage.restoreState();
+			}
+			
+
+			if(isDraft==0) {
+				PdfCanvas canvasDraft = new PdfCanvas(page);
+				canvasDraft.saveState();
+				canvasDraft.setExtGState(new PdfExtGState().setFillOpacity(.7f));
+				try (Canvas canvas = new Canvas(canvasDraft, pdfDoc, pageSize)) {
+					Image imageDraft = new Image(ImageDataFactory.create(inputStreamToByteArray(getClass().getResourceAsStream("/static/draft-water-mark.png"))));
+					imageDraft.scaleAbsolute(520, 520);
+					imageDraft.setFixedPosition(140, 60);
+
+					canvas.add(imageDraft);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					canvasDraft.restoreState();
+				}
+			}
+			
+			
 		}
 
 		pdfDoc.close();
 		return baos.toByteArray();
 	}
 
-	public ResponseEntity<?> downloadRecommendationReptPdf(Integer isDraft, String planYear,
+	public ResponseEntity<?> downloadDraftPABDetailsReptPdf(Integer isDraft, String planYear,
 			Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>>> costingReportMap,
 			String regionName, Optional<MastStatesTentative> stateTentive,
 			List<RecurringNonRecurring> statePlanList, List<RecurringNonRecurring> budgetRecurNonRecur2324,
@@ -218,7 +314,7 @@ public class RecommendationReptPdf {
 
 		// first page paragraph----Start-----------
 		Color paraFColor1 = new DeviceRgb(165, 42, 42);
-		doc.add(CommonMethod.createParaGraphBold("Recommendation Sheet", 30f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
+		doc.add(CommonMethod.createParaGraphBold("Draft PAB Details Sheet", 30f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold("(Samagra Shiksha)", 0f, 0f, 40, new DeviceRgb(165, 42, 42), null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold("of", 20f, 0f, 20, paraFColor1, null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold(regionName == null ? "" : regionName, 10f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
@@ -251,7 +347,6 @@ public class RecommendationReptPdf {
 
 			// 3rd page Tentative Proposed table----Start-----------
 			if (stateTentive != null && stateTentive.isPresent()) {
-
 				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 				doc.add(CommonMethod.createParaGraphBold("Tentative Outlay F.Y. 2024-25", 30f, 0f, 12, paraFColor3, null, TextAlignment.CENTER));
 				Table tableTentative = getTentativeProposed(doc, stateTentive, planYear);
@@ -278,6 +373,10 @@ public class RecommendationReptPdf {
 				Table tableComponentDetails = getMajorCompoDetails(doc, majorComponentProposal, planYear);
 				doc.add(tableComponentDetails);
 			}
+			/*if (majorComponentProposal != null && majorComponentProposal.size() > 0) {
+				Table tableComponentDetails = getAreaChartMajorCompoDetails(doc, majorComponentProposal, planYear);
+				doc.add(tableComponentDetails);
+			}*/
 			// ---------------------------------------------------------
 
 			// 5th page MajorComponentPercentDetails table----Start-----------
@@ -292,7 +391,7 @@ public class RecommendationReptPdf {
 			if (majorComponentProposal != null && majorComponentProposal.size() > 0) {
 				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 				doc.add(CommonMethod.createParaGraphBold("Major Component wise Details", 30f, 0f, 15, paraFColor3, null, TextAlignment.CENTER));
-				Table tableMajorChart = getMajorComponentChart(doc, majorComponentProposal, planYear);
+				Table tableMajorChart = getMajorComponentChartDraftPAB(doc, majorComponentProposal, planYear);
 				doc.add(tableMajorChart);
 			}
 			// ------------------------------------------------------------
@@ -324,14 +423,15 @@ public class RecommendationReptPdf {
 
 		byte[] bytes = byteArrayOutputStream.toByteArray();
 		try {
-			bytes = addFooterAndPageNumbers(bytes, regionName, planYear,isDraft);
+			bytes = addFooterAndPageNumbersDraftPAB(bytes, regionName, planYear,isDraft);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", "inline; filename=Recommendation Sheet Recommended for " + regionName + ".pdf");
+		headers.add("Content-Disposition", "inline; filename=Draft PAB details Sheet Recommended for " + regionName + ".pdf");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(bytes);
 	}
+
 
 	
 	
@@ -394,6 +494,66 @@ public class RecommendationReptPdf {
 
 		return table;
 	}
+	
+	private Table getMajorComponentChartDraftPAB(Document doc, List<MajorComponentProposal> majorComponentProposal, String planYear) throws IOException {
+
+		Table table = new Table(UnitValue.createPercentArray(new float[] { 1f, 1f }));
+		table.setWidth(UnitValue.createPercentValue(100));
+		table.setFixedLayout();
+
+		try {
+			Double financialAmountTot = 0d, recommendationFinancialAmountTot = 0d;
+			Map<String, Double> dataSet = new TreeMap<>();
+			Map<String, Double> recommendationFincdataSet = new TreeMap<>();
+			for (MajorComponentProposal listObj : majorComponentProposal) {
+				double financialAmount = 0d;
+				if (listObj.getFinancialAmount() != null)
+					financialAmount = listObj.getFinancialAmount();
+
+				double recommendationFinancialAmount = 0d;
+				if (listObj.getRecommendedFinancialAmount() != null)
+					recommendationFinancialAmount = listObj.getRecommendedFinancialAmount();
+
+				if (listObj.getMajorComponentName() != null && !listObj.getMajorComponentName().equals("Total")) {
+					dataSet.put(listObj.getMajorComponentName(), Double.parseDouble(df.format(financialAmount)));
+					recommendationFincdataSet.put(listObj.getMajorComponentName(), Double.parseDouble(df.format(recommendationFinancialAmount)));
+				} else if (listObj.getMajorComponentName() != null && listObj.getMajorComponentName().equals("Total")) {
+					financialAmountTot = financialAmount;
+					recommendationFinancialAmountTot = recommendationFinancialAmount;
+				}
+			}
+
+			String centerTotalFA = dfWithoutZero.format(financialAmountTot);
+			ImageData dImageData = DrawChartImage.generateDonutChart(dataSet, centerTotalFA, "State Proposal (Figures In Lakhs)", 19, 15, 11, 5);
+			Image dChartimage = new Image(dImageData);
+			dChartimage.setAutoScale(true);
+			// dChartimage.scaleAbsolute(225, 225);
+			// dChartimage.setMaxHeight(225);
+			dChartimage.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+			Cell celld = new Cell(1, 1);
+			celld.add(dChartimage);
+			table.addCell(celld);
+
+			String centerTotalDS = dfWithoutZero.format(recommendationFinancialAmountTot);
+			ImageData dImageData1 = DrawChartImage.generateDonutChart(recommendationFincdataSet, centerTotalDS, "DoSEL Recommendations (Figures In Lakhs)", 19, 15, 11, 5);
+			Image dChartimage1 = new Image(dImageData1);
+			dChartimage1.setAutoScale(true);
+			// dChartimage1.scaleAbsolute(225, 225);
+			// dChartimage1.setMaxHeight(225);
+			dChartimage1.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+			Cell cellPie1 = new Cell(1, 1);
+			cellPie1.add(dChartimage1);
+			table.addCell(cellPie1);
+		} catch (NumberFormatException | IOException e) {
+			e.printStackTrace();
+			return table;
+		}
+
+		return table;
+	}
+
 
 	private Table getMajorComponentPercentDetails(Document doc, List<MajorComponentProposal> majorComponentStatePlan, String planYear) throws IOException {
 		Table table = new Table(UnitValue.createPercentArray(new float[] { 0.5f, 2f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }));
@@ -479,7 +639,8 @@ public class RecommendationReptPdf {
 							CommonMethod.createDataCell(table, df.format(totDoSEL), 1, 1, dataFontSize, bgColorgTotal, TextAlignment.RIGHT);
 							CommonMethod.createDataCell(table, recommendationFinancialAmountTot==0?dfWithTwoDig.format(0):dfWithTwoDig.format((totDoSEL == null ? 0 : totDoSEL) / recommendationFinancialAmountTot * 100), 1, 1, dataFontSize, bgColorgTotalPercent, TextAlignment.RIGHT);
 							sno++;
-							recProposed = 0.0d; nonRecProposed = 0.0d; totProposed = 0.0d; recDoSEL = 0.0d; nonRecDoSEL = 0.0d; totDoSEL = 0.0d;
+
+							recProposed = 0.0d; nonRecProposed = 0.0d; totProposed = 0.0d; recDoSEL = 0.0d; nonRecDoSEL = 0.0d;totDoSEL = 0.0d;
 						}
 					}
 					if (listObj.getMajorComponentName().equals("Total")) {
@@ -929,6 +1090,8 @@ public class RecommendationReptPdf {
 		}
 		return table;
 	}
+	
+
 
 	private Table getSummaryGlance(Document doc, String planYear,
 			List<RecurringNonRecurring> budgetRecurNonRecur2324, List<RecurringNonRecurring> expenditureRecurNonRecur2324) throws IOException {
@@ -1095,18 +1258,18 @@ public class RecommendationReptPdf {
 		return table;
 	}
 
-	// ---CostingReportStateWise start here----------------------
-	// ---CostingReportStateWise start here----------------------
+	
+	// ---getTableReportData start here----------------------
 	private Table getTableReportData(Document doc, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>>> groupedByFiveAttributes, Integer schemeKey,
 			Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<ProposedCosting>>>>> schemeValue555555, int mainMapSize)
 			throws IOException {
 
-		Table table = new Table(UnitValue.createPercentArray(new float[] { 1.2f, 1.2f, 1.2f, 2.3f, 0.4f, 0.73f, 0.73f, 1.0f, 0.73f, 0.73f, 1.0f, 2.7f }));
+		Table table = new Table(UnitValue.createPercentArray(new float[] { 1.2f, 1.2f, 1.2f, 2.3f, 0.4f,1.0f, 1.0f, 1.0f, 0.8f, 0.7f, 1.0f, 2.6f }));
 		table.setWidth(UnitValue.createPercentValue(100));
 		table.setFixedLayout();
 
 		try {
-			float fHeader = 9.0f, fData = 8f, fGrandTotal = 7.5f;
+			float fHeader = 8.0f, fData = 6.5f;
 			if (schemeKey != 555555) {
 				Color bgColorhead = new DeviceRgb(37, 132, 198);
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Major Component", 1, 2, fHeader, bgColorhead, TextAlignment.CENTER);
@@ -1115,16 +1278,16 @@ public class RecommendationReptPdf {
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Sub Activity", 1, 2, fHeader, bgColorhead, TextAlignment.CENTER);
 				CommonMethod.createDataCellTableHeadEveryPage(table, "R/ NR", 1, 2, fHeader, bgColorhead, TextAlignment.CENTER);
 
-				/*CommonMethod.createDataCellTableHeadEveryPage(table, "State Budget F.Y. 23-24 (in Lakhs)", 4, 1, fHeader,bgColorhead, TextAlignment.CENTER);*/
+//					CommonMethod.createDataCellTableHeadEveryPage(table, "State Budget F.Y. 23-24 (in Lakhs)", 4, 1, fHeader, bgColorhead, TextAlignment.CENTER);
 
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Proposed by State", 3, 1, fHeader, bgColorhead, TextAlignment.CENTER);
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Recommended by DoSEL", 3, 1, fHeader, bgColorhead, TextAlignment.CENTER);
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Coordinator Remarks", 1, 2, fHeader, bgColorhead, TextAlignment.CENTER);
 
-				/*CommonMethod.createDataCellTableHeadEveryPage(table, "Approved Budget", 1, 1, fHeader,bgColorhead, TextAlignment.CENTER);
-				CommonMethod.createDataCellTableHeadEveryPage(table, "Fresh Exp.", 1, 1, fHeader,bgColorhead, TextAlignment.CENTER);
-				CommonMethod.createDataCellTableHeadEveryPage(table, "Spillover Cumu.", 1, 1, fHeader,bgColorhead, TextAlignment.CENTER);
-				CommonMethod.createDataCellTableHeadEveryPage(table, "Spillover Exp.", 1, 1, fHeader,bgColorhead, TextAlignment.CENTER);*/
+//					CommonMethod.createDataCellTableHeadEveryPage(table, "Approved Budget", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
+//					CommonMethod.createDataCellTableHeadEveryPage(table, "Fresh Exp.", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
+//					CommonMethod.createDataCellTableHeadEveryPage(table, "Spillover Cumu.", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
+//					CommonMethod.createDataCellTableHeadEveryPage(table, "Spillover Exp.", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
 
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Phy Qty", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
 				CommonMethod.createDataCellTableHeadEveryPage(table, "Unit Cost", 1, 1, fHeader, bgColorhead, TextAlignment.CENTER);
@@ -1207,7 +1370,7 @@ public class RecommendationReptPdf {
 										if (listObj.getSchemeId() != 555555) {
 											if (schemeFlag) {
 												String schemeName = "Schem Name : " + listObj.getSchemeId().toString() + " - " + (listObj.getSchemeName() == null ? "" : listObj.getSchemeName());
-												CommonMethod.createDataCellBold(table, schemeName, 12, 1, 10, null, TextAlignment.LEFT);
+												CommonMethod.createDataCellBold(table, schemeName, 16, 1, 10, null, TextAlignment.LEFT);
 												schemeFlag = false;
 											}
 											if (majorCompSize != 0 && listObj.getMajorComponentId() != 666666) {
@@ -1234,7 +1397,7 @@ public class RecommendationReptPdf {
 										Boolean isTotal = false;
 										if (listObj.getSchemeId() == 555555) {
 											Color bgColorgTotal = new DeviceRgb(227, 237, 243);
-											CommonMethod.createDataCellBold(table, "Grand Total of All Scheme ", 5, 1, fGrandTotal, bgColorgTotal, TextAlignment.RIGHT);
+											CommonMethod.createDataCellBold(table, "Grand Total of All Scheme ", 5, 1, fData, bgColorgTotal, TextAlignment.RIGHT);
 											isTotal = true;
 										} else if (listObj.getMajorComponentId() == 666666) {
 											CommonMethod.createDataCellBold(table, "Total of " + listObj.getSchemeName(), 5, 1, fData, null, TextAlignment.RIGHT);
@@ -1254,22 +1417,21 @@ public class RecommendationReptPdf {
 										}
 
 										if (isTotal) {
-
 											Color bgColor = null;
 											if (listObj.getSchemeId() == 555555) {
 												bgColor = new DeviceRgb(227, 237, 243);
-											}
+												fData = 6f;
+											} else
+												fData = 6.5f;
 
 											// CommonMethod.createDataCellBold(table,
 											// listObj.getRecuringNonrecuring().equals("NA") ? "" :
 											// listObj.getRecuringNonrecuring() + "", 1,
 											// 1,fData,bgColor,TextAlignment.CENTER);
-
-											/*CommonMethod.createDataCellBold(table, listObj.getTotApprovedBudget()==null ? "" : listObj.getTotApprovedBudget()==0 ? "" : df.format(listObj.getTotApprovedBudget()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCellBold(table, listObj.getTotExpenditure()==null ? "" : listObj.getTotExpenditure()==0 ? "" : df.format(listObj.getTotExpenditure()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCellBold(table, listObj.getSpillOverApprovalBudget23()==null ? "" :listObj.getSpillOverApprovalBudget23()==0 ? "" : df.format(listObj.getSpillOverApprovalBudget23()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCellBold(table, listObj.getAnticipatedExpenditureSpillOver()==null ? "" : listObj.getAnticipatedExpenditureSpillOver()==0 ? "" : df.format(listObj.getAnticipatedExpenditureSpillOver()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											*/
+//												CommonMethod.createDataCellBold(table, listObj.getTotApprovedBudget() == null ? "" : listObj.getTotApprovedBudget() == 0 ? "" : df.format(listObj.getTotApprovedBudget()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCellBold(table, listObj.getTotExpenditure() == null ? "" : listObj.getTotExpenditure() == 0 ? "" : df.format(listObj.getTotExpenditure()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCellBold(table, listObj.getSpillOverApprovalBudget23() == null ? "" : listObj.getSpillOverApprovalBudget23() == 0 ? "" : df.format(listObj.getSpillOverApprovalBudget23()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCellBold(table, listObj.getAnticipatedExpenditureSpillOver() == null ? "" : listObj.getAnticipatedExpenditureSpillOver() == 0 ? "" : df.format(listObj.getAnticipatedExpenditureSpillOver()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 
 											CommonMethod.createDataCellBold(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() == 0 ? "" : listObj.getPhysicalQuantity() + "", 1, 1, fData, bgColor, TextAlignment.RIGHT);
 											CommonMethod.createDataCellBold(table, "", 1, 1, fData, bgColor, TextAlignment.RIGHT);
@@ -1284,18 +1446,17 @@ public class RecommendationReptPdf {
 
 											Color bgColor = null;
 											if (listObj.getProposedFinancialAmount() != null && listObj.getFinancialAmount() != null && listObj.getProposedFinancialAmount() > 0 && listObj.getProposedFinancialAmount() < listObj.getFinancialAmount()) {
-												bgColor = new DeviceRgb(255, 255, 153);// Yellow color
+												bgColor = new DeviceRgb(255, 255, 255);// Yellow color
 											} else if (listObj.getProposedFinancialAmount() != null && listObj.getFinancialAmount() != null && listObj.getFinancialAmount() > 0 && listObj.getProposedFinancialAmount() == 0) {
 												bgColor = new DeviceRgb(255, 204, 204);// Red color
 											}
 
 											CommonMethod.createDataCell(table, listObj.getRecuringNonrecuring() == null ? "" : listObj.getRecuringNonrecuring().equals("NA") ? "" : listObj.getRecuringNonrecuring(), 1, 1, fData, bgColor, TextAlignment.CENTER);
+//												CommonMethod.createDataCell(table, listObj.getTotApprovedBudget() == null ? "" : listObj.getTotApprovedBudget() == 0 ? "" : df.format(listObj.getTotApprovedBudget()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCell(table, listObj.getTotExpenditure() == null ? "" : listObj.getTotExpenditure() == 0 ? "" : df.format(listObj.getTotExpenditure()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCell(table, listObj.getSpillOverApprovalBudget23() == null ? "" : listObj.getSpillOverApprovalBudget23() == 0 ? "" : df.format(listObj.getSpillOverApprovalBudget23()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+//												CommonMethod.createDataCell(table, listObj.getAnticipatedExpenditureSpillOver() == null ? "" : listObj.getAnticipatedExpenditureSpillOver() == 0 ? "" : df.format(listObj.getAnticipatedExpenditureSpillOver()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 
-											/*CommonMethod.createDataCell(table, listObj.getTotApprovedBudget()==null ? "" : listObj.getTotApprovedBudget()==0 ? "" : df.format(listObj.getTotApprovedBudget()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCell(table, listObj.getTotExpenditure()==null ? "" : listObj.getTotExpenditure()==0 ? "" : df.format(listObj.getTotExpenditure()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCell(table, listObj.getSpillOverApprovalBudget23()==null ? "" : listObj.getSpillOverApprovalBudget23()==0 ? "" : df.format(listObj.getSpillOverApprovalBudget23()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											CommonMethod.createDataCell(table, listObj.getAnticipatedExpenditureSpillOver()==null ? "" : listObj.getAnticipatedExpenditureSpillOver()==0 ? "" : df.format(listObj.getAnticipatedExpenditureSpillOver()), 1, 1,fData,bgColor,TextAlignment.RIGHT);
-											*/
 											CommonMethod.createDataCell(table, listObj.getPhysicalQuantity() == null ? "" : listObj.getPhysicalQuantity() == 0 ? "" : listObj.getPhysicalQuantity() + "", 1, 1, fData, bgColor, TextAlignment.RIGHT);
 											CommonMethod.createDataCell(table, listObj.getUnitCost() == null ? "" : listObj.getUnitCost() == 0 ? "" : df.format(listObj.getUnitCost()) + "", 1, 1, fData, bgColor, TextAlignment.RIGHT);
 											CommonMethod.createDataCell(table, listObj.getFinancialAmount() == null ? "" : listObj.getFinancialAmount() == 0 ? "" : df.format(listObj.getFinancialAmount()) + "", 1, 1, fData, bgColor, TextAlignment.RIGHT);
@@ -1303,7 +1464,7 @@ public class RecommendationReptPdf {
 											CommonMethod.createDataCell(table, listObj.getProposedPhysicalQuantity() == null ? "" : listObj.getProposedPhysicalQuantity() == 0 ? "" : dfWithoutZero.format(listObj.getProposedPhysicalQuantity()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 											CommonMethod.createDataCell(table, listObj.getProposedUnitCost() == null ? "" : listObj.getProposedUnitCost() == 0 ? "" : df.format(listObj.getProposedUnitCost()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 											CommonMethod.createDataCell(table, listObj.getProposedFinancialAmount() == null ? "" : listObj.getProposedFinancialAmount() == 0 ? "" : df.format(listObj.getProposedFinancialAmount()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
-											CommonMethod.createDataCell(table, listObj.getCoordinatorRemarks() == null ? "" : listObj.getCoordinatorRemarks(), 1, 1, 7, bgColor, TextAlignment.LEFT);
+											CommonMethod.createDataCell(table, listObj.getCoordinatorRemarks() == null ? "" : listObj.getCoordinatorRemarks(), 1, 1, fData, bgColor, TextAlignment.LEFT);
 										}
 									}
 								}

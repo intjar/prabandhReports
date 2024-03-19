@@ -31,7 +31,7 @@ public interface StateDistCostRptRepository extends CrudRepository<MstStateModel
 			+ "		  \r\n"
 			+ "		  select cc.scheme_id,cc.major_component_id,cc.sub_component_id,cc.activity_master_id,cc.activity_master_details_id,\r\n"
 			+ "		  sum(approved_budget_recurring) as approved_budget_recurring,sum(expenditure_recurring_31) as expenditure_recurring_31,sum(approved_budget_non_recurring) as approved_budget_non_recurring,sum(expenditure_non_recurring_31) as expenditure_non_recurring_31,sum(SpillOverApproval23) as SpillOverApproval23,sum(AnticipatedExpenditureSpillOver) as AnticipatedExpenditureSpillOver,sum(financial_amount) as financial_amount, sum(physical_quantity) as physical_quantity,sum(financial_amount)/ nullif(sum(physical_quantity),0) as unit_cost from (\r\n"
-			+ "select aa.scheme_id,aa.major_component_id,aa.sub_component_id,aa.activity_master_id,aa.activity_master_details_id,\r\n"
+			+ "select aa.scheme_id\\:\\:numeric,aa.major_component_id,aa.sub_component_id,aa.activity_master_id,aa.activity_master_details_id,\r\n"
 			+ "approved_budget_recurring,expenditure_recurring_31,approved_budget_non_recurring,expenditure_non_recurring_31,AnticipatedExpenditureSpillOver,SpillOverApproval23,0 as financial_amount, 0 as physical_quantity,0 as unit_cost from \r\n"
 			+ " (select scheme_id,major_component_id,sub_component_id,activity_master_id,activity_master_details_id,budget_amount as approved_budget_recurring,progress_amount as expenditure_recurring_31,\r\n"
 			+ " 0 as approved_budget_non_recurring,0 as expenditure_non_recurring_31,0 as AnticipatedExpenditureSpillOver,\r\n"
@@ -43,7 +43,7 @@ public interface StateDistCostRptRepository extends CrudRepository<MstStateModel
 			+ "	   financial_amount_cummu_inception as SpillOverApproval23 from prb_ann_wrk_pln_bdgt_spill_over\r\n"
 			+ "where state=:stateId  ) aa \r\n"
 			+ "union all\r\n"
-			+ "SELECT pawpbd.scheme_id,\r\n"
+			+ "SELECT pawpbd.scheme_id\\:\\:numeric ,\r\n"
 			+ "          pawpbd.major_component_id,\r\n"
 			+ "          pawpbd.sub_component_id,\r\n"
 			+ "          pawpbd.activity_master_id,\r\n"
@@ -170,9 +170,20 @@ public interface StateDistCostRptRepository extends CrudRepository<MstStateModel
 	public List<RecurringNonRecurring> findExpexpenditureRecurNonRecur2324(@Param("stateId") Integer stateId);
 
 
+	/*	@Query(nativeQuery=true, value ="select ps.title as SchemeName,aa.SpillOverApproval23,aa.AnticipatedExpenditureSpillOver\r\n"
+				+ "from (\r\n"
+				+ "	select scheme_id,round(coalesce(sum(financial_amount_cummu_inception),0),5) as SpillOverApproval23,round(coalesce(sum(financial_amount_progress_inception),0),5) as AnticipatedExpenditureSpillOver\r\n"
+				+ "	from prb_ann_wrk_pln_bdgt_spill_over where state=:stateId \r\n"
+				+ "	group by scheme_id\r\n"
+				+ ") aa \r\n"
+				+ "left join prb_schemes ps on ps.id=aa.scheme_id\\:\\:int\r\n"
+				+ "order by ps.id")
+		public List<Spillover> getSpilloverListList(@Param("stateId") Integer stateId);*/
+	
 	@Query(nativeQuery=true, value ="select ps.title as SchemeName,aa.SpillOverApproval23,aa.AnticipatedExpenditureSpillOver\r\n"
 			+ "from (\r\n"
-			+ "	select scheme_id,round(coalesce(sum(financial_amount_cummu_inception),0),5) as SpillOverApproval23,round(coalesce(sum(financial_amount_progress_inception),0),5) as AnticipatedExpenditureSpillOver\r\n"
+			+ "	select scheme_id,round(coalesce(sum( coalesce (financial_amount_cummu_inception,0) +	coalesce (fresh_approval_financial_amount,0) ),0),5) as SpillOverApproval23, \r\n"
+			+ "	round(coalesce(sum(coalesce (financial_amount_progress_inception,0) + coalesce (exp_against_fresh_app_fin,0)),0),5) as AnticipatedExpenditureSpillOver \r\n"
 			+ "	from prb_ann_wrk_pln_bdgt_spill_over where state=:stateId \r\n"
 			+ "	group by scheme_id\r\n"
 			+ ") aa \r\n"

@@ -39,6 +39,14 @@ public class ReportController {
 		return costingRptService.downloadRecommendationReport(regionId,planYear,isDetails);
 	}
 	
+	@GetMapping(value = "draft-PAB-details/{regionId}/{planYear}")
+	public ResponseEntity<?> fetchDraftPABMinutsDetailsReport(
+			@PathVariable(name = "regionId") Integer regionId,
+			@PathVariable(name = "planYear") String planYear) throws IOException {
+		return costingRptService.downloadDraftPABReport(regionId,planYear);
+	}
+	
+	
 	
 	@GetMapping(value = "recommendation/{regionId}/{planYear}")
 	public ResponseEntity<?> fetchRecommendationReport(
@@ -50,5 +58,21 @@ public class ReportController {
 	}
 	
 	
+	@GetMapping(value = "spillover/{regionId}/{planYear}")
+	public ResponseEntity<?> fetchSpilloverReport(
+			@PathVariable(name = "regionId") Integer regionId,
+			@PathVariable(name = "planYear") String planYear) throws IOException {
+		
+		return costingRptService.downloadSpilloverReport(regionId,planYear);
+	}
+	
+	
+	@GetMapping(value = "annexure/{regionId}/{planYear}")
+	public ResponseEntity<?> fetchAnnexureReport(
+			@PathVariable(name = "regionId") Integer regionId,
+			@PathVariable(name = "planYear") String planYear) throws IOException {
+		
+		return costingRptService.downloadAnnexureReport(regionId,planYear);
+	}
 
 }

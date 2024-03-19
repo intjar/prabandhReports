@@ -12,4 +12,12 @@ public interface CostingRptService {
 	ResponseEntity<?> downloadRecommendationReport(Integer regionId, String planYear, boolean isDetails)throws IOException;
 
 
+	ResponseEntity<?> downloadSpilloverReport(Integer regionId, String planYear)throws IOException;
+	
+	public ResponseEntity<?> downloadDraftPABReport(Integer regionId, String planYear)throws IOException;
+
+
+	ResponseEntity<?> downloadAnnexureReport(Integer regionId, String planYear)throws IOException;
+
+
 }
