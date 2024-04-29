@@ -17,6 +17,7 @@ import com.org.nic.prabandh.bean.AnnexureSchemeDetails;
 import com.org.nic.prabandh.bean.MajorComponentProposal;
 import com.org.nic.prabandh.bean.ProposedCosting;
 import com.org.nic.prabandh.bean.RecurringNonRecurring;
+import com.org.nic.prabandh.bean.Snippet.SpilOverSchemeTotalProj;
 import com.org.nic.prabandh.bean.SpillOverReportDto;
 import com.org.nic.prabandh.bean.Spillover;
 import com.org.nic.prabandh.model.MastStatesTentative;
@@ -399,6 +400,7 @@ System.out.println(regionId+", "+planYear);
 			MstStateModel mstStateModel = stateMaster.get();
 			regionName = mstStateModel.getStateName() != null ? mstStateModel.getStateName() : "";
 		}
+		List<SpilOverSchemeTotalProj> schemeTotalList = sillOverRptRepository.findTotalByState(regionId);
 		List<SpillOverReportDto> dataList = sillOverRptRepository.findAllByState(regionId);
 		
 		List<SpillOverReportDto> listObj = new ArrayList<>();
@@ -432,7 +434,7 @@ System.out.println(regionId+", "+planYear);
 				.computeIfAbsent(activityMasterDetailsId, k -> new ArrayList<>()).add(model);
 		}
 		
-		response= spilloverReptPdf.downloadSpilloverReptPdf(planYear,regionName, groupedByFields);
+		response= spilloverReptPdf.downloadSpilloverReptPdf(planYear,regionName, groupedByFields,schemeTotalList);
 		
 		return response;
 	}

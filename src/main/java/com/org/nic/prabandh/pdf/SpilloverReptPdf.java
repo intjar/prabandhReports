@@ -47,6 +47,7 @@ import com.itextpdf.layout.property.AreaBreakType;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
+import com.org.nic.prabandh.bean.Snippet.SpilOverSchemeTotalProj;
 import com.org.nic.prabandh.bean.SpillOverReportDto;
 import com.org.nic.prabandh.constant.Constants;
 import com.org.nic.prabandh.utill.CommonMethod;
@@ -165,7 +166,7 @@ public class SpilloverReptPdf {
 	}
 
 	public ResponseEntity<?> downloadSpilloverReptPdf(String planYear,String regionName,
-			Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>>> groupedByFields) throws IOException {
+			Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>>> groupedByFields, List<SpilOverSchemeTotalProj> schemeTotalList) throws IOException {
 
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		PdfWriter write = new PdfWriter(byteArrayOutputStream);
@@ -191,8 +192,22 @@ public class SpilloverReptPdf {
 		doc.add(CommonMethod.createParaGraphBold("Govt. Of India", 1f, 0f, 15, paraFColor2, null, TextAlignment.CENTER));
 		// first page paragraph---End------------
 
+		doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 		Color paraFColor3 = new DeviceRgb(0, 0, 0);
 		if (groupedByFields.size() > 1) {
+
+			//-----------total scheme wise start-----------------
+			if (schemeTotalList != null && schemeTotalList.size() > 0) {
+				Table tableToatl = getSchemeWiseTotal(doc, schemeTotalList);
+				doc.add(tableToatl);
+
+			}
+			
+			
+			//-----------total scheme wise end-----------------
+			
+			
+			
 			// report data-----Start------------
 			int majaorSrNo = 0;
 			for (Map.Entry<Integer, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>>> schemeEntry : groupedByFields.entrySet()) {
@@ -206,7 +221,7 @@ public class SpilloverReptPdf {
 
 				majaorSrNo++;
 				Table tableDetailsReport = getTableReportData(doc, groupedByFields, majorKey,majaorSrNo, majorValue, majorValue666666, (groupedByFields.size() - 1));
-				doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+				
 				doc.add(tableDetailsReport);
 			}
 			// report data-----end------------
@@ -233,6 +248,31 @@ public class SpilloverReptPdf {
 	
 	
 	
+	private Table getSchemeWiseTotal(Document doc, List<SpilOverSchemeTotalProj> schemeTotalList) throws IOException {
+		float[] tableWidth={1.2f, 1.0f, 1.2f, 1.0f, 1.2f, 1.0f};
+		Table table = new Table(UnitValue.createPercentArray(tableWidth));
+		table.setWidth(UnitValue.createPercentValue(100));
+		table.setFixedLayout();
+		
+		
+		Color fcolor = new DeviceRgb(255,255,255);
+		Border borderColor = new SolidBorder(new DeviceRgb(239, 239, 239), 1);
+		Color bgColorhead = new DeviceRgb(37, 132, 198);
+		
+		try {
+			table.addCell(CommonMethod.createCellBold("", 6, 1, 8f).setPaddingTop(10).setBorder(null));
+			for (SpilOverSchemeTotalProj obj : schemeTotalList) {
+				table.addCell(CommonMethod.createCellBold(obj.getScheme_name() !=null?obj.getScheme_name():"", 1, 1, 8f).setTextAlignment(TextAlignment.CENTER).setFontColor(fcolor).setBackgroundColor(bgColorhead));
+				table.addCell(CommonMethod.createCellBold(obj.getSum()!=null?df.format(obj.getSum())+"":"0", 1, 1, 8f).setTextAlignment(TextAlignment.RIGHT));
+			}
+			table.addCell(CommonMethod.createCellBold("", 6, 1, 8f).setPaddingBottom(15).setBorder(null));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return table;
+		}
+		return table;
+	}
+
 	// ---Main Report start here----------------------
 	private Table getTableReportData(Document doc, Map<Integer, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>>> groupedByFields, Integer majorKey,
 			int majaorSrNo, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>> majorValue, Map<Integer, Map<Integer, Map<Integer, List<SpillOverReportDto>>>> majorValue666666, int mainMapSize)
@@ -391,11 +431,11 @@ public class SpilloverReptPdf {
 											fData = 8f;
 										}
 
-										CommonMethod.createDataCellBold(table, listObj.getTotal_physical_budget_approved() == null ? "0" : listObj.getTotal_physical_budget_approved() == 0 ? "" : dfWithoutZero.format(listObj.getTotal_physical_budget_approved()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
-										CommonMethod.createDataCellBold(table, listObj.getTotal_financial_budget_approved() == null ? "0" : listObj.getTotal_financial_budget_approved() == 0 ? "" : df.format(listObj.getTotal_financial_budget_approved()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+										CommonMethod.createDataCellBold(table, listObj.getTotal_physical_budget_approved() == null ? "0" : dfWithoutZero.format(listObj.getTotal_physical_budget_approved()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+										CommonMethod.createDataCellBold(table, listObj.getTotal_financial_budget_approved() == null ? "0" : df.format(listObj.getTotal_financial_budget_approved()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 										
 										CommonMethod.createDataCellBold(table, listObj.getPhysical_quantity_progress_complete_inception() == null ? "0"  : dfWithoutZero.format(listObj.getPhysical_quantity_progress_complete_inception()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
-										CommonMethod.createDataCellBold(table, listObj.getPhysical_quantity_progress_progress_inception() == null ? "0" : listObj.getPhysical_quantity_progress_progress_inception() == 0 ? "" : dfWithoutZero.format(listObj.getPhysical_quantity_progress_progress_inception()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
+										CommonMethod.createDataCellBold(table, listObj.getPhysical_quantity_progress_progress_inception() == null ? "0" :  dfWithoutZero.format(listObj.getPhysical_quantity_progress_progress_inception()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 										CommonMethod.createDataCellBold(table, listObj.getFinancial_amount_progress_inception() == null ? "0" : df.format(listObj.getFinancial_amount_progress_inception()), 1, 1, fData, bgColor, TextAlignment.RIGHT);
 										
 										CommonMethod.createDataCellBold(table, listObj.getPhysical_quantity_progress_progress_inception() == null ? "0": dfWithoutZero.format(listObj.getPhysical_quantity_progress_progress_inception()), 1, 1, fData, bgColor, TextAlignment.RIGHT);

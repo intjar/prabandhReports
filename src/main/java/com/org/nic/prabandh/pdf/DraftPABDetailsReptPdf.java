@@ -314,7 +314,7 @@ public class DraftPABDetailsReptPdf {
 
 		// first page paragraph----Start-----------
 		Color paraFColor1 = new DeviceRgb(165, 42, 42);
-		doc.add(CommonMethod.createParaGraphBold("Draft PAB Details Sheet", 30f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
+		doc.add(CommonMethod.createParaGraphBold("PAB Details Sheet", 30f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold("(Samagra Shiksha)", 0f, 0f, 40, new DeviceRgb(165, 42, 42), null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold("of", 20f, 0f, 20, paraFColor1, null, TextAlignment.CENTER));
 		doc.add(CommonMethod.createParaGraphBold(regionName == null ? "" : regionName, 10f, 0f, 35, paraFColor1, null, TextAlignment.CENTER));
